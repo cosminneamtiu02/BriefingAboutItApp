@@ -6,11 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import Utils.AuthUtils;
 import Utils.LogInAndRegistrationDataValidator;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -18,6 +19,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView emailField;
     private TextView passwordField;
     private TextView reenterPasswordField;
+    private AuthUtils register;
 
     private final LogInAndRegistrationDataValidator dataValidator = new LogInAndRegistrationDataValidator();
 
@@ -29,18 +31,19 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         // Email validation Listener
-        emailField = (EditText)findViewById(R.id.editTextTextEmailAddress);
+        emailField = findViewById(R.id.editTextTextEmailAddress);
         emailField.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable email) {
                 if(dataValidator.isEmailValid(email.toString().trim())){
                     emailField.setError(null);
-                    emailField.clearFocus();
                 }
             }
 
             public void beforeTextChanged(CharSequence email, int start,
-                                          int count, int after) {            }
+                                          int count, int after) {
+
+            }
 
             public void onTextChanged(CharSequence email, int start,
                                       int before, int count) {
@@ -53,18 +56,19 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         // Password validation Listener
-        passwordField = (EditText)findViewById(R.id.editTextTextPassword);
+        passwordField = findViewById(R.id.editTextTextPassword);
         passwordField.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable password) {
                 if(dataValidator.isPasswordValid(password.toString())){
                     passwordField.setError(null);
-                    passwordField.clearFocus();
                 }
             }
 
             public void beforeTextChanged(CharSequence password, int start,
-                                          int count, int after) {            }
+                                          int count, int after) {
+
+            }
 
             public void onTextChanged(CharSequence password, int start,
                                       int before, int count) {
@@ -77,18 +81,19 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         // Reenter password validation Listener
-        reenterPasswordField = (EditText)findViewById(R.id.editTextTextReenterPassword);
+        reenterPasswordField = findViewById(R.id.editTextTextReenterPassword);
         reenterPasswordField.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable reenteredPassword) {
                 if(dataValidator.doPasswordsCoincide(reenteredPassword.toString(), passwordField.getText().toString())){
                     reenterPasswordField.setError(null);
-                    reenterPasswordField.clearFocus();
                 }
             }
 
             public void beforeTextChanged(CharSequence reenteredPassword, int start,
-                                          int count, int after) {            }
+                                          int count, int after) {
+
+            }
 
             public void onTextChanged(CharSequence reenteredPassword, int start,
                                       int before, int count) {
@@ -102,13 +107,16 @@ public class RegisterActivity extends AppCompatActivity {
 
         //initiate registration
         Button registerButton = findViewById(R.id.register_button);
-        passwordField = (EditText)findViewById(R.id.editTextTextPassword);
-        reenterPasswordField = (EditText)findViewById(R.id.editTextTextReenterPassword);
+        passwordField = findViewById(R.id.editTextTextPassword);
+        reenterPasswordField = findViewById(R.id.editTextTextReenterPassword);
         registerButton.setOnClickListener(view -> {
 
             boolean emailOK = false;
             boolean passwordOK = false;
             boolean reenteredPasswordOK = false;
+
+            String password = passwordField.getText().toString();
+            String email = emailField.getText().toString().trim();
 
             if(emailField.getText().toString().trim().equals("")){
                 emailField.setError("Email is required!");
@@ -141,12 +149,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             if(emailOK && passwordOK && reenteredPasswordOK){
-                Toast.makeText(getApplicationContext(),"Welcome back!",Toast.LENGTH_SHORT).show();
-                Intent goBackToLogIn = new Intent(this, LogInActivity.class);
-                finish();
-                this.startActivity(goBackToLogIn);
-
-                //TODO finish registration
+                register = new AuthUtils();
+                register.register(this, email, password);
             }
 
         });

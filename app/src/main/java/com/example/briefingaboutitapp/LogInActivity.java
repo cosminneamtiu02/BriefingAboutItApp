@@ -3,19 +3,23 @@ package com.example.briefingaboutitapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.EditText;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
+import Utils.AuthUtils;
 import Utils.LogInAndRegistrationDataValidator;
 
 public class LogInActivity extends AppCompatActivity {
     private TextView emailField;
     private TextView passwordField;
+    private AuthUtils logIn;
 
     private final LogInAndRegistrationDataValidator dataValidator = new LogInAndRegistrationDataValidator();
 
@@ -25,14 +29,23 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
+
+        //if user is already logged in, redirect him to main activity
+        SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        String emailFromLogin = sh.getString("email", "");
+        if(!emailFromLogin.equalsIgnoreCase("")){
+            Intent goToMainActivity = new Intent(this, MainActivity.class);
+            startActivity(goToMainActivity);
+        }
+
+
         // Email validation Listener
-        emailField = (EditText)findViewById(R.id.editTextTextEmailAddress);
+        emailField = findViewById(R.id.editTextTextEmailAddress);
         emailField.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable email) {
                 if(dataValidator.isEmailValid(email.toString().trim())){
                     emailField.setError(null);
-                    emailField.clearFocus();
                 }
             }
 
@@ -51,8 +64,11 @@ public class LogInActivity extends AppCompatActivity {
 
         //initiate log in
         Button logInButton = findViewById(R.id.log_in_button);
-        passwordField = (EditText)findViewById(R.id.editTextTextPassword);
+        passwordField = findViewById(R.id.editTextTextPassword);
         logInButton.setOnClickListener(view -> {
+
+            String password = passwordField.getText().toString();
+            String email = emailField.getText().toString().trim();
 
             boolean emailOK = false;
             boolean passwordOK = false;
@@ -75,12 +91,13 @@ public class LogInActivity extends AppCompatActivity {
             }
 
             if(emailOK && passwordOK){
-                //TODO login
+                logIn = new AuthUtils();
+                logIn.logIn(this, email, password);
             }
 
         });
 
-        //go to registration intent
+        //go to registration activity
         Button registerButton = findViewById(R.id.register_button);
         registerButton.setOnClickListener(view -> {
             Intent goToRegistration = new Intent(this, RegisterActivity.class);

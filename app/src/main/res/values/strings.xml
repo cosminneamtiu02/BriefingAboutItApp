@@ -11,4 +11,17 @@
     <string name="existing_account">Already own an account?</string>
     <string name="enter_email_hint">account@email.com</string>
     <string name="enter_password_hint">Password123</string>
+    <string name="title_activity_article_detail_host">ArticleDetailHostActivity</string>
+    <string name="title_article_list">Articles</string>
+    <string name="title_article_detail">Article Detail</string>
+    <string name="title_activity_main">MainActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="log_out">Log out</string>
+    <string name="create_article">Create article</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>
