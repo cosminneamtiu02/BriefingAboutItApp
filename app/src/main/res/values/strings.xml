@@ -18,10 +18,18 @@
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
+    <string name="third_fragment_label">Third Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="log_out">Log out</string>
     <string name="create_article">Create article</string>
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_create_article">CreateArticle</string>
+    <string name="goToMainActivity">Return to main activity</string>
+    <string name="goToArticleText">Go to article text edit</string>
+    <string name="goToPicturesPick">Picture picker next</string>
+    <string name="returnToTitleEdit">Return to title edit</string>
+    <string name="submitForm">Submit Form</string>
+    <string name="returnToEditText">Return to edit article</string>
 </resources>

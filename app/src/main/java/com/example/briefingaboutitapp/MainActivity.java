@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.Button;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.Objects;
 
 import Utils.AuthUtils;
@@ -28,6 +30,12 @@ public class MainActivity extends AppCompatActivity {
         logOutButton.setOnClickListener(view -> {
             AuthUtils database = new AuthUtils();
             database.logout(this);
+        });
+
+        FloatingActionButton createArticle = findViewById(R.id.createArticle);
+        createArticle.setOnClickListener(view -> {
+            Intent goToArticleCreation = new Intent(this, CreateArticle.class);
+            this.startActivity(goToArticleCreation);
         });
     }
 }
