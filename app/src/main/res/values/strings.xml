@@ -32,4 +32,20 @@
     <string name="returnToTitleEdit">Return to title edit</string>
     <string name="submitForm">Submit Form</string>
     <string name="returnToEditText">Return to edit article</string>
+    <string name="title">Title:</string>
+    <string name="my_title_hint">my title</string>
+    <string name="pick_heading_size">Pick a heading size:</string>
+    <string name="h1_text">Section Heading 1</string>
+    <string name="h2_text">Section Heading 2</string>
+    <string name="h3_text">Section Heading 3</string>
+    <string name="h4_text">Section Heading 4</string>
+    <string name="title_design">Title design:</string>
+    <string name="image_description_text">Image description:</string>
+    <string name="image_description_hint">short description</string>
+    <string name="photo_picker_button_instruction">Pick a photo from gallery!</string>
+    <string name="photo_picker_button_string">Select</string>
+    <string name="imageViewDescription">Earlier picked image.</string>
+    <string name="done_photo_naming">Done</string>
+    <string name="blur_faces_tag_string">Blur faces in image?</string>
+    <string name="check_blur">Blur faces in image?</string>
 </resources>

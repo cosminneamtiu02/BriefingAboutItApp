@@ -1,17 +1,19 @@
 package com.example.briefingaboutitapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 
+import Entities.Article;
 import Utils.AuthUtils;
+import Utils.EntitiesUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton createArticle = findViewById(R.id.createArticle);
         createArticle.setOnClickListener(view -> {
+
+            //create the new article
+            Article newArticle = new Article();
+            EntitiesUtils createArticleJSON = new EntitiesUtils(getApplicationContext());
+            createArticleJSON.updateArticleShPref(newArticle);
+
+            //navigate to the article creation intent
             Intent goToArticleCreation = new Intent(this, CreateArticle.class);
             this.startActivity(goToArticleCreation);
         });

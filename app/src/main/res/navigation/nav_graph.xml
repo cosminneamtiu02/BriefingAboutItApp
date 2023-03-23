@@ -5,6 +5,9 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/FirstFragment">
 
+    <action android:id="@+id/return_to_photos_list"
+        app:destination="@id/ThirdFragment"/>
+
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.example.briefingaboutitapp.FirstFragment"
@@ -36,5 +39,17 @@
         <action
             android:id="@+id/action_ThirdFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_ThirdFragment_to_pickedImageFragment"
+            app:destination="@id/pickedImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pickedImageFragment"
+        android:name="com.example.briefingaboutitapp.PickedImageFragment"
+        android:label="fragment_picked_image"
+        tools:layout="@layout/fragment_picked_image" >
+        <action
+            android:id="@+id/action_pickedImageFragment_to_ThirdFragment2"
+            app:destination="@id/ThirdFragment" />
     </fragment>
 </navigation>

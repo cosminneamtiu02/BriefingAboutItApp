@@ -19,6 +19,19 @@ public class CreateArticle extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityCreateArticleBinding binding;
+    public static boolean active = false;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        active = true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        active = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
