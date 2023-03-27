@@ -2,16 +2,24 @@ package Entities;
 
 import android.net.Uri;
 
-import java.io.Serializable;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
-public class Image implements Serializable{
+import java.lang.reflect.Type;
+
+public class Image{
     private final String id;
-    private final Uri photo;
+    private final String photo;
     private final String imageName;
     private final boolean blurred;
     private final boolean toBlur;
 
-    public Image(String id, String imageName, Uri photo, boolean blurred, boolean toBlur) {
+    public Image(String id, String imageName, String photo, boolean blurred, boolean toBlur) {
         this.id = id;
         this.imageName = imageName;
         this.photo = photo;
@@ -28,7 +36,7 @@ public class Image implements Serializable{
     }
 
     public Uri getPhoto() {
-        return photo;
+        return Uri.parse(photo);
     }
 
     public String getImageName() {
@@ -38,4 +46,6 @@ public class Image implements Serializable{
     public String getId() {
         return id;
     }
+
+
 }

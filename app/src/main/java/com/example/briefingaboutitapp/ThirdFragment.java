@@ -2,7 +2,6 @@ package com.example.briefingaboutitapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +15,17 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.briefingaboutitapp.databinding.FragmentThirdBinding;
-import com.google.gson.Gson;
 
+import java.util.List;
+
+import Entities.Article;
 import Entities.Image;
+import Utils.EntitiesUtils;
+import Utils.ImagesAdapter.ImagesAdapter;
 
 public class ThirdFragment extends Fragment {
 
@@ -35,6 +40,18 @@ public class ThirdFragment extends Fragment {
     ) {
 
         binding = FragmentThirdBinding.inflate(inflater, container, false);
+
+        //gets the images from the article
+        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+        Article article = articleUtils.getArticleFromShPref();
+        List<Image> images = article.getImages();
+
+        // Add the following lines to create RecyclerView
+        RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recyclerview);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext()));
+        recyclerView.setAdapter(new ImagesAdapter(images));
+
         return binding.getRoot();
 
     }
@@ -42,22 +59,7 @@ public class ThirdFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        try {
-            Gson gson = new Gson();
 
-                if (gson.fromJson(requireArguments().getString("IMAGE"), Image.class) != null) {
-                    Image myImage = gson.fromJson(requireArguments().getString("IMAGE"), Image.class);
-                    Log.d("test", myImage.getImageName());
-                    Log.d("test", myImage.getId());
-                    Log.d("test", myImage.getPhoto().toString());
-                    Log.d("test", String.valueOf(myImage.isBlurred()));
-                    Log.d("test", String.valueOf(myImage.isToBlur()));
-                }
-
-        }
-        catch (Exception e){
-            Log.d("test", "image still null");
-        }
 
         binding.returnToEditText.setOnClickListener(view1 -> NavHostFragment.findNavController(ThirdFragment.this)
                 .navigate(R.id.action_ThirdFragment_to_SecondFragment));

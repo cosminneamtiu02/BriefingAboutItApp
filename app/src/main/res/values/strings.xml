@@ -42,7 +42,7 @@
     <string name="title_design">Title design:</string>
     <string name="image_description_text">Image description:</string>
     <string name="image_description_hint">short description</string>
-    <string name="photo_picker_button_instruction">Pick a photo from gallery!</string>
+    <string name="photo_picker_button_instruction">Add a new photo from gallery!</string>
     <string name="photo_picker_button_string">Select</string>
     <string name="imageViewDescription">Earlier picked image.</string>
     <string name="done_photo_naming">Done</string>
