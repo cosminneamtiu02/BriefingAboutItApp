@@ -48,4 +48,6 @@
     <string name="done_photo_naming">Done</string>
     <string name="blur_faces_tag_string">Blur faces in image?</string>
     <string name="check_blur">Blur faces in image?</string>
+    <string name="delete_button">Delete</string>
+    <string name="pick_other_image_button_text">Pick another image</string>
 </resources>

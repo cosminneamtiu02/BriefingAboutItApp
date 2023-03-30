@@ -7,22 +7,17 @@
 
     <TextView
         android:id="@+id/randomText"
-        android:layout_width="314dp"
+        android:layout_width="366dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_marginStart="24dp"
+        android:layout_marginEnd="-48dp"
         android:textSize="20sp"
-        tools:text="This is some temp text" />
+        tools:text="This is some temp text"
+        android:background="@drawable/shadow_round"
+        android:gravity="center"
+        />
 
-    <Button
-        android:id="@+id/delete_image_button"
-        android:layout_width="48dp"
-        android:layout_height="49dp"
-        android:layout_alignEnd="@+id/randomText"
-        android:layout_marginEnd="-65dp"
-        android:adjustViewBounds="true"
-        android:backgroundTint="@color/red"
-        android:drawableTop="@drawable/delete_icon"
-        android:scaleType="centerInside" />
+
 
 </RelativeLayout>

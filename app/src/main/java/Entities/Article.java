@@ -26,7 +26,12 @@ public class Article {
     }
 
     public void deleteImage(Image image){
-        this.images.remove(image);
+        this.images.removeIf(i -> i.getId().equals(image.getId()));
+    }
+
+    public void updateImage(Image image){
+        deleteImage(image);
+        addNewImage(image);
     }
 
     public void addNewParagraph(Paragraph newParagraph){

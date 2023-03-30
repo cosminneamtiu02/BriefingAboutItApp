@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentFirstBinding;
+
+import java.util.Objects;
 
 import Entities.Article;
 import Utils.DesignUtils;
@@ -36,9 +39,41 @@ public class FirstFragment extends Fragment {
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
+
+
     ) {
 
+
         binding = FragmentFirstBinding.inflate(inflater, container, false);
+
+
+
+        //gets the images from the article
+        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+        Article article = articleUtils.getArticleFromShPref();
+
+        //if already set, sets radiobutton and
+        if(!Objects.equals(article.getTitle().getTitleText(), "") && !Objects.equals(article.getTitle().getHeader(), "")){
+            EditText localEditText = binding.getRoot().findViewById(R.id.editTextTitle);
+            localEditText.setText(article.getTitle().getTitleText());
+
+            this.titleText = article.getTitle().getTitleText();
+
+            RadioGroup radioGroup = binding.getRoot().findViewById(R.id.title_heading_radio_group);
+            if(Objects.equals(article.getTitle().getHeader(), "h1")){
+                radioGroup.check(R.id.radio_h1);
+            }
+            else if(Objects.equals(article.getTitle().getHeader(), "h2")){
+                radioGroup.check(R.id.radio_h2);
+            }
+            else if(Objects.equals(article.getTitle().getHeader(), "h3")){
+                radioGroup.check(R.id.radio_h3);
+            }
+            else{
+                radioGroup.check(R.id.radio_h4);
+            }
+        }
+
         return binding.getRoot();
 
     }
@@ -46,6 +81,7 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         titleDesign = view.findViewById(R.id.title_design_display);
+
 
         //goes to second fragment
         binding.goToEditArticleText.setOnClickListener(view1 -> {

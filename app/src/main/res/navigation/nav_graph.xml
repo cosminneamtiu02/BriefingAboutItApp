@@ -42,14 +42,26 @@
         <action
             android:id="@+id/action_ThirdFragment_to_pickedImageFragment"
             app:destination="@id/pickedImageFragment" />
+        <action
+            android:id="@+id/action_ThirdFragment_to_editPhotoFragment"
+            app:destination="@id/editPhotoFragment" />
     </fragment>
     <fragment
         android:id="@+id/pickedImageFragment"
         android:name="com.example.briefingaboutitapp.PickedImageFragment"
-        android:label="fragment_picked_image"
+        android:label="Image Creator"
         tools:layout="@layout/fragment_picked_image" >
         <action
             android:id="@+id/action_pickedImageFragment_to_ThirdFragment2"
+            app:destination="@id/ThirdFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editPhotoFragment"
+        android:name="com.example.briefingaboutitapp.EditPhotoFragment"
+        android:label="Image Editor"
+        tools:layout="@layout/fragment_edit_photo" >
+        <action
+            android:id="@+id/action_editPhotoFragment_to_ThirdFragment"
             app:destination="@id/ThirdFragment" />
     </fragment>
 </navigation>

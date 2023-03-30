@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.briefingaboutitapp.databinding.FragmentThirdBinding;
 
 import java.util.List;
+import java.util.Objects;
 
 import Entities.Article;
 import Entities.Image;
@@ -39,7 +41,17 @@ public class ThirdFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+
         binding = FragmentThirdBinding.inflate(inflater, container, false);
+
+        return binding.getRoot();
+
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
 
         //gets the images from the article
         EntitiesUtils articleUtils = new EntitiesUtils(getContext());
@@ -50,15 +62,20 @@ public class ThirdFragment extends Fragment {
         RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext()));
-        recyclerView.setAdapter(new ImagesAdapter(images));
+        ImagesAdapter imagesAdapter = new ImagesAdapter(images);
+        recyclerView.setAdapter(imagesAdapter);
 
-        return binding.getRoot();
+        imagesAdapter.setOnClickListener(position -> {
 
-    }
+            //package object uri
+            Bundle bundle = new Bundle();
+            bundle.putString("ImageObjectPosition", String.valueOf(position));
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+            //navigate to edit image title
+            NavHostFragment.findNavController(ThirdFragment.this)
+                    .navigate(R.id.action_ThirdFragment_to_editPhotoFragment, bundle);
 
+        });
 
 
         binding.returnToEditText.setOnClickListener(view1 -> NavHostFragment.findNavController(ThirdFragment.this)
@@ -88,7 +105,6 @@ public class ThirdFragment extends Fragment {
             Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
             this.startActivity(goToMainActivity);
             Toast.makeText(this.getContext(),"Article submitted successfully!",Toast.LENGTH_SHORT).show();
-
         });
     }
 

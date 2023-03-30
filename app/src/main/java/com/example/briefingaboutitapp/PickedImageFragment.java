@@ -9,12 +9,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.briefingaboutitapp.databinding.FragmentPickedImageBinding;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import Entities.Article;
@@ -32,6 +34,8 @@ public class PickedImageFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+
         binding = FragmentPickedImageBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
@@ -40,6 +44,8 @@ public class PickedImageFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
 
         this.imageUri = Uri.parse(requireArguments().getString("imageURI"));
 
