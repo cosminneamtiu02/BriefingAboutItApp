@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_createParagraphFragment"
+            app:destination="@id/createParagraphFragment" />
     </fragment>
     <fragment
         android:id="@+id/ThirdFragment"
@@ -63,5 +66,26 @@
         <action
             android:id="@+id/action_editPhotoFragment_to_ThirdFragment"
             app:destination="@id/ThirdFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createParagraphFragment"
+        android:name="com.example.briefingaboutitapp.CreateParagraphFragment"
+        android:label="Create New Paragraph"
+        tools:layout="@layout/fragment_create_paragraph" >
+        <action
+            android:id="@+id/action_createParagraphFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_createParagraphFragment_to_editParagraphTitleFragment"
+            app:destination="@id/editParagraphTitleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editParagraphTitleFragment"
+        android:name="com.example.briefingaboutitapp.EditParagraphTitleFragment"
+        android:label="Create Paragraph Title"
+        tools:layout="@layout/fragment_edit_paragraph_title" >
+        <action
+            android:id="@+id/action_editParagraphTitleFragment_to_createParagraphFragment"
+            app:destination="@id/createParagraphFragment" />
     </fragment>
 </navigation>

@@ -39,7 +39,7 @@ public class Article {
     }
 
     public void deleteParagraph(Paragraph paragraph){
-        this.paragraphs.remove(paragraph);
+        this.paragraphs.removeIf(i -> i.getParagraphId().equals(paragraph.getParagraphId()));
     }
 
     public Title getTitle() {

@@ -4,6 +4,11 @@ public class Title {
     private String header;
     private String text;
 
+    public Title(){
+        this.header = "h1";
+        this.text = "";
+    }
+
     public Title(String header, String text) {
         this.header = header;
         this.text = text;

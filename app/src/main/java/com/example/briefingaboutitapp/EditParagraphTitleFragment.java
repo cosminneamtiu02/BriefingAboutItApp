@@ -1,7 +1,6 @@
 package com.example.briefingaboutitapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -10,70 +9,43 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.briefingaboutitapp.databinding.FragmentFirstBinding;
+import com.example.briefingaboutitapp.databinding.FragmentEditParagraphTitleBinding;
+import com.google.gson.Gson;
 
 import java.util.Objects;
 
-import Entities.Article;
+import Entities.Paragraph;
+import Entities.Title;
 import Utils.DesignUtils;
-import Utils.EntitiesUtils;
 
+public class EditParagraphTitleFragment extends Fragment {
 
-public class FirstFragment extends Fragment {
+    private FragmentEditParagraphTitleBinding binding;
 
-    private FragmentFirstBinding binding;
+    private TextView titleDesign;
+
     private String titleHeading = "h1";
     private String titleText = "";
-    private TextView titleDesign;
+
+    private Paragraph paragraph;
 
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
-
-
     ) {
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
 
 
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
-
-
-
-        //gets the images from the article
-        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-        Article article = articleUtils.getArticleFromShPref();
-
-        //if already set, sets radiobutton and
-        if(!Objects.equals(article.getTitle().getTitleText(), "") && !Objects.equals(article.getTitle().getHeader(), "")){
-            EditText localEditText = binding.getRoot().findViewById(R.id.editTextTitle);
-            localEditText.setText(article.getTitle().getTitleText());
-
-            this.titleText = article.getTitle().getTitleText();
-
-            RadioGroup radioGroup = binding.getRoot().findViewById(R.id.title_heading_radio_group);
-            if(Objects.equals(article.getTitle().getHeader(), "h1")){
-                radioGroup.check(R.id.radio_h1);
-            }
-            else if(Objects.equals(article.getTitle().getHeader(), "h2")){
-                radioGroup.check(R.id.radio_h2);
-            }
-            else if(Objects.equals(article.getTitle().getHeader(), "h3")){
-                radioGroup.check(R.id.radio_h3);
-            }
-            else{
-                radioGroup.check(R.id.radio_h4);
-            }
-        }
-
+        binding = FragmentEditParagraphTitleBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -83,25 +55,29 @@ public class FirstFragment extends Fragment {
         titleDesign = view.findViewById(R.id.title_design_display);
 
 
-        //goes to second fragment
-        binding.goToEditArticleText.setOnClickListener(view1 -> {
+        Gson gson = new Gson();
+        this.paragraph = gson.fromJson(requireArguments().getString("paragraph"), Paragraph.class);
 
-            if(!titleText.equals("")) {
-                //update the article with the new data
-                EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
-                Article article = articleUtils.getArticleFromShPref();
-                article.setTitleText(this.titleText);
-                article.setTitleHeader(this.titleHeading);
-                articleUtils.updateArticleShPref(article);
+        this.titleText = this.paragraph.getParagraphTitle().getTitleText();
+        this.titleHeading = this.paragraph.getParagraphTitle().getHeader();
 
-                //navigate to second fragment
-                NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
-            }
-            else{
-                Toast.makeText(view.getContext(), "Please set an article title.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        RadioGroup radioGroup = binding.getRoot().findViewById(R.id.title_heading_radio_group);
+        if(Objects.equals(this.titleHeading, "h1")){
+            radioGroup.check(R.id.radio_h1);
+        }
+        else if(Objects.equals(this.titleHeading, "h2")){
+            radioGroup.check(R.id.radio_h2);
+        }
+        else if(Objects.equals(this.titleHeading, "h3")){
+            radioGroup.check(R.id.radio_h3);
+        }
+        else{
+            radioGroup.check(R.id.radio_h4);
+        }
+        setTitleDesign();
+
+        binding.editTextTitle.setText(this.titleText);
+
 
         //hide keyboard on click elsewhere(do not forget to copy:
         // android:clickable="true"
@@ -113,7 +89,6 @@ public class FirstFragment extends Fragment {
         });
 
         //listens to the state of the currently set heading
-        RadioGroup radioGroup = view.findViewById(R.id.title_heading_radio_group);
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -139,7 +114,7 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        // Email validation Listener
+
         TextView titleField = view.findViewById(R.id.editTextTitle);
         titleField.addTextChangedListener(new TextWatcher() {
 
@@ -159,18 +134,17 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        //drops the current article edit
-        binding.returnToMainActivity.setOnClickListener(view1 -> {
+        binding.submitTitle.setOnClickListener(navigate -> {
 
-            //remove created article from shared preferences
-            EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
-            articleUtils.dropArticleFromShPref();
+            //package title and heading
+            Bundle bundle = new Bundle();
 
-            //navigate back to main page
-            Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
-            this.startActivity(goToMainActivity);
-            Toast.makeText(this.getContext(),"Article deleted!",Toast.LENGTH_SHORT).show();
-        });
+            Title title = new Title(this.titleHeading, this.titleText);
+            this.paragraph.setParagraphTitle(title);
+            bundle.putString("paragraph", gson.toJson(this.paragraph));
+
+            NavHostFragment.findNavController(EditParagraphTitleFragment.this)
+                .navigate(R.id.action_editParagraphTitleFragment_to_createParagraphFragment, bundle);});
 
 
     }
@@ -192,5 +166,4 @@ public class FirstFragment extends Fragment {
         DesignUtils keyboard = new DesignUtils(binding.getRoot());
         keyboard.closeKeyBoard();
     }
-
 }
