@@ -26,8 +26,7 @@ import Entities.Paragraph;
 import Entities.Title;
 import Utils.DesignUtils;
 
-
-public class EditParagraphTitleFragment extends Fragment {
+public class CreateParagraphTitleFragment extends Fragment {
 
     private FragmentEditParagraphTitleBinding binding;
 
@@ -43,8 +42,8 @@ public class EditParagraphTitleFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+
 
         binding = FragmentEditParagraphTitleBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -55,13 +54,15 @@ public class EditParagraphTitleFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         titleDesign = view.findViewById(R.id.title_design_display);
 
-
+        //getting paragraph from bundle
         Gson gson = new Gson();
         this.paragraph = gson.fromJson(requireArguments().getString("paragraph"), Paragraph.class);
 
+        //setting possible subject areas
         this.titleText = this.paragraph.getParagraphTitle().getTitleText();
         this.titleHeading = this.paragraph.getParagraphTitle().getHeader();
 
+        //setting the already inputted heading
         RadioGroup radioGroup = binding.getRoot().findViewById(R.id.title_heading_radio_group);
         if(Objects.equals(this.titleHeading, "h1")){
             radioGroup.check(R.id.radio_h1);
@@ -115,7 +116,7 @@ public class EditParagraphTitleFragment extends Fragment {
             }
         });
 
-
+        //change title display on title text change
         TextView titleField = view.findViewById(R.id.editTextTitle);
         titleField.addTextChangedListener(new TextWatcher() {
 
@@ -135,6 +136,7 @@ public class EditParagraphTitleFragment extends Fragment {
             }
         });
 
+        //navigate to title editing
         binding.submitTitle.setOnClickListener(navigate -> {
 
             //package title and heading
@@ -144,18 +146,19 @@ public class EditParagraphTitleFragment extends Fragment {
             this.paragraph.setParagraphTitle(title);
             bundle.putString("paragraph", gson.toJson(this.paragraph));
 
-            NavHostFragment.findNavController(EditParagraphTitleFragment.this)
-                    .navigate(R.id.action_editParagraphTitleFragment2_to_editParagraphFragment, bundle);});
+            NavHostFragment.findNavController(CreateParagraphTitleFragment.this)
+                .navigate(R.id.action_editParagraphTitleFragment_to_createParagraphFragment, bundle);});
 
 
     }
+
+
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
-
 
     private void setTitleDesign(){
         String titleHTML = "<" + titleHeading + ">" + titleText + "</" + titleHeading + ">";

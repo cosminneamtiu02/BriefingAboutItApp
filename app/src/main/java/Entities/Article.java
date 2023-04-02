@@ -42,6 +42,11 @@ public class Article {
         this.paragraphs.removeIf(i -> i.getParagraphId().equals(paragraph.getParagraphId()));
     }
 
+    public void updateParagraph(Paragraph myParagraph){
+        deleteParagraph(myParagraph);
+        addNewParagraph(myParagraph);
+    }
+
     public Title getTitle() {
         return title;
     }

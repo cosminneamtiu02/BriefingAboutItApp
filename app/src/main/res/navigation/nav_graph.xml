@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_SecondFragment_to_createParagraphFragment"
             app:destination="@id/createParagraphFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_editParagraphFragment"
+            app:destination="@id/editParagraphFragment" />
     </fragment>
     <fragment
         android:id="@+id/ThirdFragment"
@@ -81,11 +84,32 @@
     </fragment>
     <fragment
         android:id="@+id/editParagraphTitleFragment"
-        android:name="com.example.briefingaboutitapp.EditParagraphTitleFragment"
+        android:name="com.example.briefingaboutitapp.CreateParagraphTitleFragment"
         android:label="Create Paragraph Title"
         tools:layout="@layout/fragment_edit_paragraph_title" >
         <action
             android:id="@+id/action_editParagraphTitleFragment_to_createParagraphFragment"
             app:destination="@id/createParagraphFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editParagraphFragment"
+        android:name="com.example.briefingaboutitapp.EditParagraphFragment"
+        android:label="Edit Article Paragraph"
+        tools:layout="@layout/fragment_edit_paragraph" >
+        <action
+            android:id="@+id/action_editParagraphFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_editParagraphFragment_to_editParagraphTitleFragment2"
+            app:destination="@id/editParagraphTitleFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/editParagraphTitleFragment2"
+        android:name="com.example.briefingaboutitapp.EditParagraphTitleFragment"
+        android:label="Edit Article Paragraph Title"
+        tools:layout="@layout/fragment_edit_paragraph_title2" >
+        <action
+            android:id="@+id/action_editParagraphTitleFragment2_to_editParagraphFragment"
+            app:destination="@id/editParagraphFragment" />
     </fragment>
 </navigation>

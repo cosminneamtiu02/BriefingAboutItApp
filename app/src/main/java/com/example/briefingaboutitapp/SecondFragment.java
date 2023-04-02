@@ -54,6 +54,18 @@ public class SecondFragment extends Fragment {
         ParagraphsAdapter paragraphsAdapter = new ParagraphsAdapter(paragraphs);
         recyclerView.setAdapter(paragraphsAdapter);
 
+        paragraphsAdapter.setOnClickListener(position -> {
+
+            //package object
+            Bundle bundle = new Bundle();
+            bundle.putString("ParagraphObjectPosition", String.valueOf(position));
+
+            //navigate to edit image title
+            NavHostFragment.findNavController(SecondFragment.this)
+                    .navigate(R.id.action_SecondFragment_to_editParagraphFragment, bundle);
+
+        });
+
         binding.createParagraphButton.setOnClickListener(view13 -> NavHostFragment.findNavController(SecondFragment.this)
                 .navigate(R.id.action_SecondFragment_to_createParagraphFragment));
 
