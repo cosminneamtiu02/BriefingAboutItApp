@@ -1,6 +1,7 @@
 package com.example.briefingaboutitapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.Button;
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         createArticle.setOnClickListener(view -> {
 
             //create the new article
-            Article newArticle = new Article();
+            SharedPreferences sh = getApplicationContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+            Article newArticle = new Article(sh.getString("email", ""));
             EntitiesUtils createArticleJSON = new EntitiesUtils(getApplicationContext());
             createArticleJSON.updateArticleShPref(newArticle);
 

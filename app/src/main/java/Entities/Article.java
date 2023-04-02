@@ -1,16 +1,29 @@
 package Entities;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Article {
+    private final String id;
+    private final String creator;
     private Title title;
     private ArrayList<Image> images;
     private ArrayList<Paragraph> paragraphs;
 
-    public Article() {
+    public Article(String creator) {
+        this.id = UUID.randomUUID().toString();
+        this.creator = creator;
         this.title = new Title("","");
         this.images = new ArrayList<>();
         this.paragraphs = new ArrayList<>();
+    }
+
+    public String getArticleId() {
+        return id;
+    }
+
+    public String getCreator() {
+        return creator;
     }
 
     public void setTitleText(String newTitleText){
