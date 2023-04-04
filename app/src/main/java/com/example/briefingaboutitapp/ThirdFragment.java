@@ -1,7 +1,10 @@
 package com.example.briefingaboutitapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.briefingaboutitapp.databinding.FragmentThirdBinding;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,10 +90,25 @@ public class ThirdFragment extends Fragment {
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 result -> {
                     if(result!= null){
+                        Bitmap photoBitmap;
+                        String photoBitmapAsString = "";
+                        //convert uri to bitmap
+                        try {
+                            photoBitmap = BitmapFactory.decodeStream(binding.getRoot().getContext()
+                                    .getContentResolver().openInputStream(result));
+
+                            //convert bitmap to string to be passed
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                            byte[] byteArray = stream.toByteArray();
+                            photoBitmapAsString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
 
                         //package image uri
                         Bundle bundle = new Bundle();
-                        bundle.putString("imageURI", result.toString());
+                        bundle.putString("imageBitmap", photoBitmapAsString);
 
                         //navigate to image display and set title with parceled uri
                         NavController navController = Navigation.findNavController(view);

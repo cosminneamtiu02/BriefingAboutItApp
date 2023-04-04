@@ -1,7 +1,9 @@
 package com.example.briefingaboutitapp;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +28,7 @@ import Utils.EntitiesUtils;
 
 public class PickedImageFragment extends Fragment {
     private FragmentPickedImageBinding binding;
-    private Uri imageUri;
+    private Bitmap imageUri;
 
     @Override
     public View onCreateView(
@@ -47,11 +49,11 @@ public class PickedImageFragment extends Fragment {
 
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
 
-        this.imageUri = Uri.parse(requireArguments().getString("imageURI"));
+        this.imageUri = convertStringToBitmap(requireArguments().getString("imageBitmap"));
 
         //get passed image
         ImageView imageView = view.findViewById(R.id.image_view);
-        imageView.setImageURI(this.imageUri);
+        imageView.setImageBitmap(this.imageUri);
 
         //hide keyboard on click elsewhere(do not forget to copy:
         // android:clickable="true"
@@ -71,7 +73,7 @@ public class PickedImageFragment extends Fragment {
                 String photoName = binding.photoDescription.getText().toString().trim();
                 String imageID = UUID.randomUUID().toString();
                 boolean to_blur = binding.checkForBlurring.isChecked();
-                Image myImage = new Image(imageID, photoName, this.imageUri.toString(), false, to_blur);
+                Image myImage = new Image(imageID, photoName, this.imageUri, false, to_blur);
 
                 //save the photo to temporary article object
                 EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
@@ -98,4 +100,12 @@ public class PickedImageFragment extends Fragment {
         DesignUtils keyboard = new DesignUtils(binding.getRoot());
         keyboard.closeKeyBoard();
     }
+
+    public static Bitmap convertStringToBitmap(String string) {
+        byte[] byteArray1;
+        byteArray1 = Base64.decode(string, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(byteArray1, 0,
+                byteArray1.length);/* w  w  w.ja va 2 s  .  c om*/
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.briefingaboutitapp;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentEditPhotoBinding;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +39,7 @@ public class EditPhotoFragment extends Fragment {
 
     private Image myImage;
 
-    private Uri localImageUri;
+    private Bitmap localImageBitmap;
 
     private ImageView imageView;
 
@@ -86,10 +88,10 @@ public class EditPhotoFragment extends Fragment {
 
 
         //set image
-        Uri imageUri = myImage.getPhoto();
-        this.localImageUri = imageUri;
+        Bitmap imageBitmap = myImage.getPhoto();
+        this.localImageBitmap = imageBitmap;
         imageView = binding.getRoot().findViewById(R.id.image_view_edit);
-        imageView.setImageURI(imageUri);
+        imageView.setImageBitmap(imageBitmap);
 
 
         //pick another image
@@ -97,8 +99,21 @@ public class EditPhotoFragment extends Fragment {
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 result -> {
                     if(result!= null){
-                        this.localImageUri = result;
-                        imageView.setImageURI(result);
+                        Bitmap photoBitmap = null;
+
+                        //convert uri to bitmap
+                        try {
+                            photoBitmap = BitmapFactory.decodeStream(binding.getRoot().getContext()
+                                    .getContentResolver().openInputStream(result));
+
+
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                        this.localImageBitmap = photoBitmap;
+                        imageView.setImageBitmap(this.localImageBitmap);
+
                     }
 
                 });
@@ -113,7 +128,7 @@ public class EditPhotoFragment extends Fragment {
                 //edit the current article photos list
                 String imageName = binding.photoDescriptionToEdit.getText().toString().trim();
                 boolean to_blur = binding.checkForBlurringEdit.isChecked();
-                Image newImage = new Image(myImage.getId(), imageName, localImageUri.toString(), false, to_blur);
+                Image newImage = new Image(myImage.getId(), imageName, localImageBitmap, false, to_blur);
                 article.updateImage(newImage);
                 articleUtils.updateArticleShPref(article);
 
