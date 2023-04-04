@@ -2,19 +2,10 @@ package Entities;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.util.Base64;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class Image{
     private final String id;
@@ -22,21 +13,28 @@ public class Image{
     private final String imageName;
     private final boolean blurred;
     private final boolean toBlur;
+    private ArrayList<Face> faces;
 
-    public Image(String id, String imageName, String photo, boolean blurred, boolean toBlur) {
+    public Image(String id, String imageName, String photo, boolean blurred, boolean toBlur, ArrayList<Face> faces) {
         this.id = id;
         this.imageName = imageName;
         this.photo = photo;
         this.blurred = blurred;
         this.toBlur = toBlur;
+        this.faces = faces;
     }
 
-    public Image(String id, String imageName, Bitmap photo, boolean blurred, boolean toBlur) {
+    public Image(String id, String imageName, Bitmap photo, boolean blurred, boolean toBlur, ArrayList<Face> faces) {
         this.id = id;
         this.imageName = imageName;
         this.photo = convertBitmapToString(photo);
         this.blurred = blurred;
         this.toBlur = toBlur;
+        this.faces = faces;
+    }
+
+    public ArrayList<Face> getFaces() {
+        return faces;
     }
 
     public boolean isBlurred() {

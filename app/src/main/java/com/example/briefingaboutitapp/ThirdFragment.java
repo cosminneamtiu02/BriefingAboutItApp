@@ -28,10 +28,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import Entities.Article;
 import Entities.Image;
 import Utils.EntitiesUtils;
+import Utils.FirestoreUtils;
 import Utils.ImagesAdapter.ImagesAdapter;
 
 public class ThirdFragment extends Fragment {
@@ -59,8 +61,8 @@ public class ThirdFragment extends Fragment {
 
 
         //gets the images from the article
-        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-        Article article = articleUtils.getArticleFromShPref();
+        AtomicReference<EntitiesUtils> articleUtils = new AtomicReference<>(new EntitiesUtils(getContext()));
+        Article article = articleUtils.get().getArticleFromShPref();
         List<Image> images = article.getImages();
 
         // Add the following lines to create RecyclerView
@@ -122,6 +124,16 @@ public class ThirdFragment extends Fragment {
         photoPickerButton.setOnClickListener(view12 -> galleryLauncher.launch("image/*"));
 
         binding.submitForm.setOnClickListener(view1 -> {
+
+            Article myArticle = articleUtils.get().getArticleFromShPref();
+
+            FirestoreUtils fsUtils = new FirestoreUtils(myArticle);
+
+            fsUtils.commitArticle();
+
+            //remove created article from shared preferences
+            articleUtils.get().dropArticleFromShPref();
+
             Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
             this.startActivity(goToMainActivity);
             Toast.makeText(this.getContext(),"Article submitted successfully!",Toast.LENGTH_SHORT).show();
