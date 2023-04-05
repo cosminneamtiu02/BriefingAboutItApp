@@ -128,7 +128,7 @@ public class EditPhotoFragment extends Fragment {
                 //edit the current article photos list
                 String imageName = binding.photoDescriptionToEdit.getText().toString().trim();
                 boolean to_blur = binding.checkForBlurringEdit.isChecked();
-                Image newImage = new Image(myImage.getId(), imageName, localImageBitmap, false, to_blur, null);
+                Image newImage = new Image(myImage.getId(), imageName, localImageBitmap, null, to_blur, null);
                 article.updateImage(newImage);
                 articleUtils.updateArticleShPref(article);
 

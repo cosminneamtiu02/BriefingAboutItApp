@@ -73,7 +73,7 @@ public class PickedImageFragment extends Fragment {
                 String photoName = binding.photoDescription.getText().toString().trim();
                 String imageID = UUID.randomUUID().toString();
                 boolean to_blur = binding.checkForBlurring.isChecked();
-                Image myImage = new Image(imageID, photoName, this.imageUri, false, to_blur, null);
+                Image myImage = new Image(imageID, photoName, this.imageUri, "", to_blur, null);
 
                 //save the photo to temporary article object
                 EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
