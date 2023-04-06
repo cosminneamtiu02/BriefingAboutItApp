@@ -3,6 +3,7 @@ package com.example.briefingaboutitapp;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentEditPhotoBinding;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -88,7 +91,7 @@ public class EditPhotoFragment extends Fragment {
 
 
         //set image
-        Bitmap imageBitmap = myImage.getPhoto();
+        Bitmap imageBitmap = convertStringToBitmap(myImage.getPhoto());
         this.localImageBitmap = imageBitmap;
         imageView = binding.getRoot().findViewById(R.id.image_view_edit);
         imageView.setImageBitmap(imageBitmap);
@@ -128,7 +131,7 @@ public class EditPhotoFragment extends Fragment {
                 //edit the current article photos list
                 String imageName = binding.photoDescriptionToEdit.getText().toString().trim();
                 boolean to_blur = binding.checkForBlurringEdit.isChecked();
-                Image newImage = new Image(myImage.getId(), imageName, localImageBitmap, null, to_blur, null);
+                Image newImage = new Image(myImage.getId(), imageName, convertBitmapToString(localImageBitmap), "", to_blur, new ArrayList<>());
                 article.updateImage(newImage);
                 articleUtils.updateArticleShPref(article);
 
@@ -166,6 +169,20 @@ public class EditPhotoFragment extends Fragment {
     private void hideKeyboard(){
         DesignUtils keyboard = new DesignUtils(binding.getRoot());
         keyboard.closeKeyBoard();
+    }
+
+    private static String convertBitmapToString(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+    public static Bitmap convertStringToBitmap(String string) {
+        byte[] byteArray1;
+        byteArray1 = Base64.decode(string, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(byteArray1, 0,
+                byteArray1.length);
     }
 
 }

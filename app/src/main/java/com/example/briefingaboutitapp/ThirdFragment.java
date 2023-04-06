@@ -129,14 +129,14 @@ public class ThirdFragment extends Fragment {
 
             FirestoreUtils fsUtils = new FirestoreUtils(myArticle);
 
-            if(fsUtils.commitArticle(this.getContext())){
-                //remove created article from shared preferences
-                articleUtils.get().dropArticleFromShPref();
+            fsUtils.commitArticle(this.getContext());
 
-                Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
-                this.startActivity(goToMainActivity);
+            //remove created article from shared preferences
+            articleUtils.get().dropArticleFromShPref();
 
-            }
+            Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
+            this.startActivity(goToMainActivity);
+
 
         });
     }

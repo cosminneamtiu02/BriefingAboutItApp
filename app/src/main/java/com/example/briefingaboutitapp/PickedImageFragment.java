@@ -18,6 +18,8 @@ import androidx.navigation.Navigation;
 
 import com.example.briefingaboutitapp.databinding.FragmentPickedImageBinding;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -73,7 +75,8 @@ public class PickedImageFragment extends Fragment {
                 String photoName = binding.photoDescription.getText().toString().trim();
                 String imageID = UUID.randomUUID().toString();
                 boolean to_blur = binding.checkForBlurring.isChecked();
-                Image myImage = new Image(imageID, photoName, this.imageUri, "", to_blur, null);
+                Image myImage = new Image(imageID, photoName, convertBitmapToString(this.imageUri), "", to_blur, new ArrayList<>());
+
 
                 //save the photo to temporary article object
                 EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
@@ -106,6 +109,13 @@ public class PickedImageFragment extends Fragment {
         byteArray1 = Base64.decode(string, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(byteArray1, 0,
                 byteArray1.length);/* w  w  w.ja va 2 s  .  c om*/
+    }
+
+    private static String convertBitmapToString(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
 }

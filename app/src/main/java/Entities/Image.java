@@ -11,24 +11,15 @@ public class Image{
     private final String id;
     private final String photo;
     private final String imageName;
-    private final String blurredImage;
+    private final String imageBlurred;
     private final boolean toBlur;
     private ArrayList<Face> faces;
 
-    public Image(String id, String imageName, String photo, String blurredImage, boolean toBlur, ArrayList<Face> faces) {
+    public Image(String id, String imageName, String photo, String imageBlurred, boolean toBlur, ArrayList<Face> faces) {
         this.id = id;
         this.imageName = imageName;
         this.photo = photo;
-        this.blurredImage = blurredImage;
-        this.toBlur = toBlur;
-        this.faces = faces;
-    }
-
-    public Image(String id, String imageName, Bitmap photo, String blurredImage, boolean toBlur, ArrayList<Face> faces) {
-        this.id = id;
-        this.imageName = imageName;
-        this.photo = convertBitmapToString(photo);
-        this.blurredImage = blurredImage;
+        this.imageBlurred = imageBlurred;
         this.toBlur = toBlur;
         this.faces = faces;
     }
@@ -37,17 +28,22 @@ public class Image{
         return faces;
     }
 
-    public String isBlurredImage() {
-        return blurredImage;
-    }
-
     public boolean isToBlur() {
         return toBlur;
     }
 
-    public Bitmap getPhoto() {
-        return convertStringToBitmap(photo);
+    public String getPhoto() {
+        return photo;
     }
+
+    public String getImageBlurred() {
+        return imageBlurred;
+    }
+
+    public Bitmap getBlurredPhotoAsBitmap() {
+        return convertStringToBitmap(imageBlurred);
+    }
+
 
     public String getImageName() {
         return imageName;
