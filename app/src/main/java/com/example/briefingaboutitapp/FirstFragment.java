@@ -1,16 +1,19 @@
 package com.example.briefingaboutitapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,12 +23,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentFirstBinding;
+import com.google.firebase.firestore.DocumentReference;
 
 import java.util.Objects;
 
 import Entities.Article;
+import Entities.Title;
 import Utils.DesignUtils;
 import Utils.EntitiesUtils;
+import Utils.FirestoreUtils;
 
 
 public class FirstFragment extends Fragment {
@@ -34,6 +40,7 @@ public class FirstFragment extends Fragment {
     private String titleHeading = "h1";
     private String titleText = "";
     private TextView titleDesign;
+    private Article article;
 
     @Override
     public View onCreateView(
@@ -45,34 +52,56 @@ public class FirstFragment extends Fragment {
 
 
         binding = FragmentFirstBinding.inflate(inflater, container, false);
+        ProgressBar progressBar = new ProgressBar(binding.getRoot().getContext(), null, android.R.attr.progressBarStyleLarge);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.VISIBLE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(binding.getRoot().getContext());
+        builder.setView(progressBar);
+        AlertDialog progressDialog = builder.create();
+        progressDialog.show();
 
-
-
-        //gets the images from the article
+        //gets temp article
         EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-        Article article = articleUtils.getArticleFromShPref();
+        Article tempArticle = articleUtils.getArticleFromShPref();
 
-        //if already set, sets radiobutton and
-        if(!Objects.equals(article.getTitle().getTitleText(), "") && !Objects.equals(article.getTitle().getHeader(), "")){
-            EditText localEditText = binding.getRoot().findViewById(R.id.editTextTitle);
-            localEditText.setText(article.getTitle().getTitleText());
+        //get article id
+        String articleID = articleUtils.getArticleUUIDFromShPref();
 
-            this.titleText = article.getTitle().getTitleText();
+        // retrieve object from Firestore
+        FirestoreUtils articleDBObject = new FirestoreUtils(tempArticle);
+        DocumentReference docRef = articleDBObject.getPath().document(articleID);
 
-            RadioGroup radioGroup = binding.getRoot().findViewById(R.id.title_heading_radio_group);
-            if(Objects.equals(article.getTitle().getHeader(), "h1")){
-                radioGroup.check(R.id.radio_h1);
+        docRef.addSnapshotListener((snapshot, e) -> {
+
+            if (snapshot != null && snapshot.exists()) {
+                progressDialog.dismiss();
+                this.article = snapshot.toObject(Article.class);
+                if (this.article != null) {
+                    if(!Objects.equals(Objects.requireNonNull(article).getTitle().getTitleText(), "") && !Objects.equals(article.getTitle().getHeader(), "")){
+                        EditText localEditText = binding.getRoot().findViewById(R.id.editTextTitle);
+                        localEditText.setText(article.getTitle().getTitleText());
+
+                        this.titleText = article.getTitle().getTitleText();
+
+                        RadioGroup radioGroup = binding.getRoot().findViewById(R.id.title_heading_radio_group);
+                        if(Objects.equals(article.getTitle().getHeader(), "h1")){
+                            radioGroup.check(R.id.radio_h1);
+                        }
+                        else if(Objects.equals(article.getTitle().getHeader(), "h2")){
+                            radioGroup.check(R.id.radio_h2);
+                        }
+                        else if(Objects.equals(article.getTitle().getHeader(), "h3")){
+                            radioGroup.check(R.id.radio_h3);
+                        }
+                        else{
+                            radioGroup.check(R.id.radio_h4);
+                        }
+                    }
+                }
+            } else {
+                Log.d("ObjRetrieve", "Current data: null");
             }
-            else if(Objects.equals(article.getTitle().getHeader(), "h2")){
-                radioGroup.check(R.id.radio_h2);
-            }
-            else if(Objects.equals(article.getTitle().getHeader(), "h3")){
-                radioGroup.check(R.id.radio_h3);
-            }
-            else{
-                radioGroup.check(R.id.radio_h4);
-            }
-        }
+        });
 
         return binding.getRoot();
 
@@ -88,11 +117,14 @@ public class FirstFragment extends Fragment {
 
             if(!titleText.equals("")) {
                 //update the article with the new data
-                EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
-                Article article = articleUtils.getArticleFromShPref();
-                article.setTitleText(this.titleText);
-                article.setTitleHeader(this.titleHeading);
-                articleUtils.updateArticleShPref(article);
+
+                Title title = new Title(this.titleHeading, this.titleText);
+
+                article.setTitle(title);
+
+                FirestoreUtils articleDBObject = new FirestoreUtils(article);
+                articleDBObject.deleteArticle(binding.getRoot().getContext());
+
 
                 //navigate to second fragment
                 NavHostFragment.findNavController(FirstFragment.this)
@@ -163,13 +195,12 @@ public class FirstFragment extends Fragment {
         binding.returnToMainActivity.setOnClickListener(view1 -> {
 
             //remove created article from shared preferences
-            EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
-            articleUtils.dropArticleFromShPref();
+            FirestoreUtils articleDBObject = new FirestoreUtils(article);
+            articleDBObject.deleteArticle(binding.getRoot().getContext());
 
             //navigate back to main page
             Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
             this.startActivity(goToMainActivity);
-            Toast.makeText(this.getContext(),"Article deleted!",Toast.LENGTH_SHORT).show();
         });
 
 

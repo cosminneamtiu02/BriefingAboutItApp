@@ -4,35 +4,52 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Article {
-    private final String id;
-    private final String creator;
+    private String articleId;
+    private String creator;
     private Title title;
     private ArrayList<Image> images;
     private ArrayList<Paragraph> paragraphs;
 
     public Article(String creator) {
-        this.id = UUID.randomUUID().toString();
+        this.articleId = UUID.randomUUID().toString().replaceAll("/", "-");
         this.creator = creator;
         this.title = new Title("","");
         this.images = new ArrayList<>();
         this.paragraphs = new ArrayList<>();
     }
 
+    public Article() {
+    }
+
+    public void setArticleId(String articleId) {
+        this.articleId = articleId;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public void setTitle(Title title) {
+        this.title = title;
+    }
+
+    public void setImages(ArrayList<Image> images) {
+        this.images = images;
+    }
+
+    public void setParagraphs(ArrayList<Paragraph> paragraphs) {
+        this.paragraphs = paragraphs;
+    }
+
     public String getArticleId() {
-        return id;
+        return articleId;
     }
 
     public String getCreator() {
         return creator;
     }
 
-    public void setTitleText(String newTitleText){
-        this.title.setText(newTitleText);
-    }
 
-    public void setTitleHeader(String newTitleHeader){
-        this.title.setHeader(newTitleHeader);
-    }
 
     public void addNewImage(Image newImage){
         this.images.add(newImage);

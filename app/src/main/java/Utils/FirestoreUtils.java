@@ -3,15 +3,11 @@ package Utils;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import Entities.Article;
-import Entities.Image;
-import Entities.Title;
 
 public class FirestoreUtils {
 
@@ -19,25 +15,27 @@ public class FirestoreUtils {
 
     private final FirebaseFirestore db;
 
+    private final CollectionReference path;
+
     public FirestoreUtils(Article article) {
         this.article = article;
         FirebaseDataBindings dbBinding = new FirebaseDataBindings();
         this.db = dbBinding.getDatabaseReference();
+        this.path = db.collection("Users" ).document(article.getCreator()).collection("Articles");
     }
 
     public void commitArticle(Context context){
-        db.collection("Users" ).document(article.getCreator()).collection("Articles").document(article.getArticleId())
-                .set(article)
+        this.path.document(article.getArticleId()).set(article)
                 .addOnSuccessListener(aVoid -> Toast.makeText(context,"Article submitted successfully!",Toast.LENGTH_SHORT).show()).addOnFailureListener(e -> Toast.makeText(context,"Error submitting article!",Toast.LENGTH_SHORT).show());
     }
 
-    public void updateArticle(){
+    public void deleteArticle(Context context){
+        this.path.document(article.getArticleId()).delete()
+                .addOnSuccessListener(aVoid -> Toast.makeText(context,"Article deleted successfully!",Toast.LENGTH_SHORT).show()).addOnFailureListener(e -> Toast.makeText(context,"Error deleting article!",Toast.LENGTH_SHORT).show());
 
     }
 
-    public void deleteArticle(){
-
+    public CollectionReference getPath() {
+        return path;
     }
-
-
 }

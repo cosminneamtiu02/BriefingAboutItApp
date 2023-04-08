@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
+import java.util.UUID;
+
 import Entities.Article;
 
 public class EntitiesUtils {
@@ -32,6 +34,18 @@ public class EntitiesUtils {
         SharedPreferences sh = this.context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
         String articleAsJSON = sh.getString("ARTICLE", "");
         return gson.fromJson(articleAsJSON, Article.class);
+    }
+
+    public void setArticleUUIDToShPref(String uuid){
+        SharedPreferences sh = this.context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = sh.edit();
+        myEdit.putString("ArticleUUID", uuid);
+        myEdit.apply();
+    }
+
+    public String getArticleUUIDFromShPref(){
+        SharedPreferences sh = this.context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        return sh.getString("ArticleUUID", "");
     }
 
     public void dropArticleFromShPref(){
