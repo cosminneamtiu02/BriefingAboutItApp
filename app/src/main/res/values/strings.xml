@@ -53,7 +53,7 @@
     <string name="create_article_button_instruction">Create a new article paragraph!</string>
     <string name="create_string">Create</string>
     <string name="add_subtitle_label_text">Add a Title to the Paragraph!</string>
-    <string name="add_subtitle_button">Add or Remove Title</string>
+    <string name="add_subtitle_button">Set or Remove Title</string>
     <string name="paragraph_description_label">Write a short description of the paragraph:</string>
     <string name="paragraph_text_label">Paragraph:</string>
     <string name="discard_paragraph">Discard</string>

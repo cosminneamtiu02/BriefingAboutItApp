@@ -12,20 +12,18 @@ public class FirestoreUtils {
 
     private final Article article;
 
-    private final FirebaseFirestore db;
-
     private final CollectionReference path;
 
     public FirestoreUtils(Article article) {
         this.article = article;
         FirebaseDataBindings dbBinding = new FirebaseDataBindings();
-        this.db = dbBinding.getDatabaseReference();
+        FirebaseFirestore db = dbBinding.getDatabaseReference();
         this.path = db.collection("Users" ).document(article.getCreator()).collection("Articles");
     }
 
     public void commitArticle(Context context){
         this.path.document(article.getArticleId()).set(article)
-                .addOnSuccessListener(aVoid -> Toast.makeText(context,"Article submitted successfully!",Toast.LENGTH_SHORT).show()).addOnFailureListener(e -> Toast.makeText(context,"Error submitting article!",Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(context,"Error submitting article!",Toast.LENGTH_SHORT).show());
     }
 
     public void deleteArticle(Context context){
