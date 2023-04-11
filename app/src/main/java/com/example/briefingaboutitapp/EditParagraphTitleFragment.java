@@ -38,6 +38,10 @@ public class EditParagraphTitleFragment extends Fragment {
 
     private Paragraph paragraph;
 
+    private String paragraphPosition;
+
+    private String articleId;
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -57,7 +61,9 @@ public class EditParagraphTitleFragment extends Fragment {
 
 
         Gson gson = new Gson();
-        this.paragraph = gson.fromJson(requireArguments().getString("paragraph"), Paragraph.class);
+        paragraphPosition = requireArguments().getString("paragraphPosition");
+        articleId = requireArguments().getString("ArticleID");
+        this.paragraph = gson.fromJson(requireArguments().getString("ParagraphToEdit"), Paragraph.class);
 
         this.titleText = this.paragraph.getParagraphTitle().getTitleText();
         this.titleHeading = this.paragraph.getParagraphTitle().getHeader();
@@ -142,7 +148,9 @@ public class EditParagraphTitleFragment extends Fragment {
 
             Title title = new Title(this.titleHeading, this.titleText);
             this.paragraph.setParagraphTitle(title);
-            bundle.putString("paragraph", gson.toJson(this.paragraph));
+            bundle.putString("ParagraphToEdit", gson.toJson(this.paragraph));
+            bundle.putString("ArticleID", articleId);
+            bundle.putString("paragraphPosition", paragraphPosition);
 
             NavHostFragment.findNavController(EditParagraphTitleFragment.this)
                     .navigate(R.id.action_editParagraphTitleFragment2_to_editParagraphFragment, bundle);});

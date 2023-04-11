@@ -1,7 +1,11 @@
 package com.example.briefingaboutitapp;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.briefingaboutitapp.databinding.FragmentSecondBinding;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Objects;
@@ -87,8 +92,18 @@ public class SecondFragment extends Fragment {
                         paragraphsAdapter.setOnClickListener(position -> {
 
                             //package object
+                            Paragraph paragraphToEdit = this.paragraphs.get(position);
+                            Gson gson = new Gson();
                             Bundle bundle = new Bundle();
-                            bundle.putString("ParagraphObjectPosition", String.valueOf(position));
+                            String paragraphString = gson.toJson(paragraphToEdit);
+                            bundle.putString("ParagraphToEdit", paragraphString);
+                            bundle.putString("ArticleID", this.article.getArticleId());
+                            bundle.putString("paragraphPosition", String.valueOf(position));
+
+                            SharedPreferences sh = binding.getRoot().getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                            SharedPreferences.Editor myEdit = sh.edit();
+                            myEdit.putString("paragraphString", paragraphString);
+                            myEdit.apply();
 
                             //navigate to edit image title
                             NavHostFragment.findNavController(SecondFragment.this)

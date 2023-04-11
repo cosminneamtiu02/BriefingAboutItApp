@@ -1,12 +1,14 @@
 package com.example.briefingaboutitapp;
 
-import android.app.AlertDialog;
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,10 +19,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentEditParagraphBinding;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.gson.Gson;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -29,7 +32,7 @@ import Entities.Paragraph;
 import Entities.Title;
 import Utils.DesignUtils;
 import Utils.EntitiesUtils;
-import Utils.FirestoreUtils;
+import Utils.FirebaseDataBindings;
 
 
 public class EditParagraphFragment extends Fragment {
@@ -38,9 +41,9 @@ public class EditParagraphFragment extends Fragment {
 
     private Paragraph paragraph;
 
-    private Article article;
+    private String paragraphPosition;
 
-    private ListenerRegistration listener;
+    private String articleId;
 
     @Override
     public View onCreateView(
@@ -51,6 +54,18 @@ public class EditParagraphFragment extends Fragment {
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
 
         binding = FragmentEditParagraphBinding.inflate(inflater, container, false);
+
+        Gson gson = new Gson();
+        String ParagraphAsJSON = requireArguments().getString("ParagraphToEdit");
+        paragraphPosition = requireArguments().getString("paragraphPosition");
+        articleId = requireArguments().getString("ArticleID");
+
+        this.paragraph = gson.fromJson(ParagraphAsJSON, Paragraph.class);
+
+        binding.paragraphDescription.setText(this.paragraph.getParagraphDescription());
+        binding.paragraphText.setText(this.paragraph.getParagraphText());
+        setTitleDesign(this.paragraph.getParagraphTitle().getHeader(), this.paragraph.getParagraphTitle().getTitleText());
+
         return binding.getRoot();
 
     }
@@ -58,63 +73,7 @@ public class EditParagraphFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding = FragmentEditParagraphBinding.bind(view);
 
-        ProgressBar progressBar = new ProgressBar(binding.getRoot().getContext(), null, android.R.attr.progressBarStyleLarge);
-        progressBar.setIndeterminate(true);
-        progressBar.setVisibility(View.VISIBLE);
-        AlertDialog.Builder builder = new AlertDialog.Builder(binding.getRoot().getContext());
-        builder.setView(progressBar);
-        AlertDialog progressDialog = builder.create();
-        progressDialog.show();
-
-        //gets temp article
-        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-        Article tempArticle = articleUtils.getArticleFromShPref();
-
-        //get article id
-        String articleID = articleUtils.getArticleUUIDFromShPref();
-
-        // retrieve object from Firestore
-        FirestoreUtils articleDBObject = new FirestoreUtils(tempArticle);
-        DocumentReference docRef = articleDBObject.getPath().document(articleID);
-
-        listener = docRef.addSnapshotListener((snapshot, e) -> {
-
-            if (snapshot != null && snapshot.exists()) {
-                progressDialog.dismiss();
-                this.article = snapshot.toObject(Article.class);
-                Bundle titleBundle = getArguments();
-
-                if(titleBundle != null) {
-
-                    try {
-
-                        //get position
-                        int paragraphIndex = Integer.parseInt(requireArguments().getString("ParagraphObjectPosition"));
-
-                        //gets the paragraphs from the article
-                        List<Paragraph> paragraphs = article.getParagraphs();
-
-                        //get the paragraph
-                        this.paragraph = paragraphs.get(paragraphIndex);
-
-                    }catch (Exception error){
-
-                        //dependent on what package it receives
-                        Gson gson = new Gson();
-                        String paragraphAsText = requireArguments().getString("paragraph");
-                        this.paragraph = gson.fromJson(paragraphAsText, Paragraph.class);
-                    }
-
-
-                    binding.paragraphDescription.setText(this.paragraph.getParagraphDescription());
-                    binding.paragraphText.setText(this.paragraph.getParagraphText());
-                    setTitleDesign(this.paragraph.getParagraphTitle().getHeader(), this.paragraph.getParagraphTitle().getTitleText());
-
-                }
-            }
-        });
 
         binding.submitParagraph.setOnClickListener(create -> {
 
@@ -135,14 +94,28 @@ public class EditParagraphFragment extends Fragment {
                     this.paragraph.setParagraphText(paragraphText);
                 }
 
-                //save the paragraph to temporary article object
 
-                article.updateParagraph(paragraph);
+                EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+                Article tempArticle = articleUtils.getArticleFromShPref();
 
-                listener.remove();
+                FirebaseDataBindings dbBinding = new FirebaseDataBindings();
+                DocumentReference documentRef = dbBinding.getDatabaseReference().
+                        collection("Users" ).
+                        document(tempArticle.getCreator()).
+                        collection("Articles").
+                        document(articleId);
 
-                FirestoreUtils myFirestore = new FirestoreUtils(this.article);
-                myFirestore.commitArticle(binding.getRoot().getContext());
+                Gson gson = new Gson();
+                SharedPreferences sh = binding.getRoot().getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                String articleAsJSON = sh.getString("paragraphString", "");
+                Paragraph paragraphToRemove = gson.fromJson(articleAsJSON, Paragraph.class);
+
+                // Update the object at the specified index in the array field
+                documentRef.update("paragraphs", FieldValue.arrayRemove(paragraphToRemove));
+
+                // add the same updated paragraph
+                documentRef.update("paragraphs", FieldValue.arrayUnion(paragraph));
+
 
                 //navigation back to article creation main path
                 NavHostFragment.findNavController(EditParagraphFragment.this)
@@ -153,12 +126,25 @@ public class EditParagraphFragment extends Fragment {
 
         binding.discardParagraph.setOnClickListener(
                 delete -> {
-                    this.article.deleteParagraph(this.paragraph);
+                    //update paragraphs
+                    EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+                    Article tempArticle = articleUtils.getArticleFromShPref();
 
-                    listener.remove();
+                    FirebaseDataBindings dbBinding = new FirebaseDataBindings();
+                    DocumentReference documentRef = dbBinding.getDatabaseReference().
+                            collection("Users" ).
+                            document(tempArticle.getCreator()).
+                            collection("Articles").
+                            document(articleId);
 
-                    FirestoreUtils iCry = new FirestoreUtils(this.article);
-                    iCry.commitArticle(binding.getRoot().getContext());
+                    Gson gson = new Gson();
+                    SharedPreferences sh = binding.getRoot().getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                    String articleAsJSON = sh.getString("paragraphString", "");
+                    Paragraph paragraphToRemove = gson.fromJson(articleAsJSON, Paragraph.class);
+
+                    // Update the object at the specified index in the array field
+                    documentRef.update("paragraphs", FieldValue.arrayRemove(paragraphToRemove));
+
 
                     NavHostFragment.findNavController(EditParagraphFragment.this)
                 .navigate(R.id.action_editParagraphFragment_to_SecondFragment);
@@ -181,7 +167,9 @@ public class EditParagraphFragment extends Fragment {
 
             Bundle bundle = new Bundle();
             Gson gson = new Gson();
-            bundle.putString("paragraph", gson.toJson(this.paragraph));
+            bundle.putString("ParagraphToEdit", gson.toJson(this.paragraph));
+            bundle.putString("ArticleID", articleId);
+            bundle.putString("paragraphPosition", paragraphPosition);
 
             NavHostFragment.findNavController(EditParagraphFragment.this)
                     .navigate(R.id.action_editParagraphFragment_to_editParagraphTitleFragment2, bundle);
