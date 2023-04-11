@@ -1,10 +1,12 @@
 package com.example.briefingaboutitapp;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentCreateParagraphBinding;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.gson.Gson;
 
 import java.util.Objects;
@@ -24,12 +28,16 @@ import Entities.Paragraph;
 import Entities.Title;
 import Utils.DesignUtils;
 import Utils.EntitiesUtils;
+import Utils.FirestoreUtils;
 
 public class CreateParagraphFragment extends Fragment {
 
     private FragmentCreateParagraphBinding binding;
 
     private Paragraph paragraph;
+
+    private Article article;
+    private ListenerRegistration listener;
 
     @Override
     public View onCreateView(
@@ -39,6 +47,33 @@ public class CreateParagraphFragment extends Fragment {
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
 
         binding = FragmentCreateParagraphBinding.inflate(inflater, container, false);
+
+        ProgressBar progressBar = new ProgressBar(binding.getRoot().getContext(), null, android.R.attr.progressBarStyleLarge);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.VISIBLE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(binding.getRoot().getContext());
+        builder.setView(progressBar);
+        AlertDialog progressDialog = builder.create();
+        progressDialog.show();
+
+        //gets temp article
+        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+        Article tempArticle = articleUtils.getArticleFromShPref();
+
+        //get article id
+        String articleID = articleUtils.getArticleUUIDFromShPref();
+
+        // retrieve object from Firestore
+        FirestoreUtils articleDBObject = new FirestoreUtils(tempArticle);
+        DocumentReference docRef = articleDBObject.getPath().document(articleID);
+
+        listener = docRef.addSnapshotListener((snapshot, e) -> {
+
+            if (snapshot != null && snapshot.exists()) {
+                progressDialog.dismiss();
+                this.article = snapshot.toObject(Article.class);
+            }
+        });
         return binding.getRoot();
 
     }
@@ -80,10 +115,10 @@ public class CreateParagraphFragment extends Fragment {
                 }
 
                 //save the paragraph to temporary article object
-                EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
-                Article article = articleUtils.getArticleFromShPref();
                 article.addNewParagraph(paragraph);
-                articleUtils.updateArticleShPref(article);
+                FirestoreUtils articleDBObject = new FirestoreUtils(article);
+                articleDBObject.commitArticle(binding.getRoot().getContext());
+                listener.remove();
 
                 //navigation back to article creation main path
                 NavHostFragment.findNavController(CreateParagraphFragment.this)
@@ -92,8 +127,13 @@ public class CreateParagraphFragment extends Fragment {
 
         });
 
-        binding.discardParagraph.setOnClickListener(delete -> NavHostFragment.findNavController(CreateParagraphFragment.this)
-                .navigate(R.id.action_createParagraphFragment_to_SecondFragment));
+        binding.discardParagraph.setOnClickListener(delete -> {
+
+            listener.remove();
+
+            NavHostFragment.findNavController(CreateParagraphFragment.this)
+                .navigate(R.id.action_createParagraphFragment_to_SecondFragment);
+        });
 
         binding.addParagraphTitleLabelButton.setOnClickListener(updateTitle -> {
 
@@ -115,7 +155,7 @@ public class CreateParagraphFragment extends Fragment {
             bundle.putString("paragraph", gson.toJson(this.paragraph));
 
             NavHostFragment.findNavController(CreateParagraphFragment.this)
-                .navigate(R.id.action_createParagraphFragment_to_editParagraphTitleFragment, bundle);
+                    .navigate(R.id.action_createParagraphFragment_to_editParagraphTitleFragment, bundle);
         });
 
         binding.paragraphText.setOnFocusChangeListener((v, hasFocus) -> {

@@ -19,6 +19,10 @@ public class Paragraph {
         this.paragraphText = paragraphText;
     }
 
+    public Paragraph(){
+
+    }
+
     public String getParagraphId() {
         return paragraphId;
     }

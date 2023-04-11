@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentFirstBinding;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Objects;
 
@@ -41,13 +41,12 @@ public class FirstFragment extends Fragment {
     private String titleText = "";
     private TextView titleDesign;
     private Article article;
+    private ListenerRegistration listener;
 
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
-
-
     ) {
 
 
@@ -71,7 +70,7 @@ public class FirstFragment extends Fragment {
         FirestoreUtils articleDBObject = new FirestoreUtils(tempArticle);
         DocumentReference docRef = articleDBObject.getPath().document(articleID);
 
-        docRef.addSnapshotListener((snapshot, e) -> {
+        listener = docRef.addSnapshotListener((snapshot, e) -> {
 
             if (snapshot != null && snapshot.exists()) {
                 progressDialog.dismiss();
@@ -98,8 +97,6 @@ public class FirstFragment extends Fragment {
                         }
                     }
                 }
-            } else {
-                Log.d("ObjRetrieve", "Current data: null");
             }
         });
 
@@ -123,8 +120,9 @@ public class FirstFragment extends Fragment {
                 article.setTitle(title);
 
                 FirestoreUtils articleDBObject = new FirestoreUtils(article);
-                articleDBObject.deleteArticle(binding.getRoot().getContext());
+                articleDBObject.commitArticle(binding.getRoot().getContext());
 
+                listener.remove();
 
                 //navigate to second fragment
                 NavHostFragment.findNavController(FirstFragment.this)
@@ -197,6 +195,7 @@ public class FirstFragment extends Fragment {
             //remove created article from shared preferences
             FirestoreUtils articleDBObject = new FirestoreUtils(article);
             articleDBObject.deleteArticle(binding.getRoot().getContext());
+            listener.remove();
 
             //navigate back to main page
             Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
