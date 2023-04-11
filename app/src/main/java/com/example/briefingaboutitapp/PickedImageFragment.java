@@ -1,5 +1,6 @@
 package com.example.briefingaboutitapp;
 
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.briefingaboutitapp.databinding.FragmentPickedImageBinding;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -27,10 +31,16 @@ import Entities.Article;
 import Entities.Image;
 import Utils.DesignUtils;
 import Utils.EntitiesUtils;
+import Utils.FirestoreUtils;
 
 public class PickedImageFragment extends Fragment {
     private FragmentPickedImageBinding binding;
     private Bitmap imageUri;
+
+    private ListenerRegistration listener;
+
+    private Article article;
+
 
     @Override
     public View onCreateView(
@@ -41,6 +51,33 @@ public class PickedImageFragment extends Fragment {
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
 
         binding = FragmentPickedImageBinding.inflate(inflater, container, false);
+
+        ProgressBar progressBar = new ProgressBar(binding.getRoot().getContext(), null, android.R.attr.progressBarStyleLarge);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.VISIBLE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(binding.getRoot().getContext());
+        builder.setView(progressBar);
+        AlertDialog progressDialog = builder.create();
+        progressDialog.show();
+
+        //gets temp article
+        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+        Article tempArticle = articleUtils.getArticleFromShPref();
+
+        //get article id
+        String articleID = articleUtils.getArticleUUIDFromShPref();
+
+        // retrieve object from Firestore
+        FirestoreUtils articleDBObject = new FirestoreUtils(tempArticle);
+        DocumentReference docRef = articleDBObject.getPath().document(articleID);
+
+        listener = docRef.addSnapshotListener((snapshot, e) -> {
+
+            if (snapshot != null && snapshot.exists()) {
+                progressDialog.dismiss();
+                this.article = snapshot.toObject(Article.class);
+            }
+        });
         return binding.getRoot();
 
 
@@ -78,11 +115,11 @@ public class PickedImageFragment extends Fragment {
                 Image myImage = new Image(imageID, photoName, convertBitmapToString(this.imageUri), "", to_blur, new ArrayList<>());
 
 
-                //save the photo to temporary article object
-                EntitiesUtils articleUtils = new EntitiesUtils(view.getContext());
-                Article article = articleUtils.getArticleFromShPref();
+                //save the paragraph to temporary article object
                 article.addNewImage(myImage);
-                articleUtils.updateArticleShPref(article);
+                FirestoreUtils articleDBObject = new FirestoreUtils(article);
+                articleDBObject.commitArticle(binding.getRoot().getContext());
+                listener.remove();
 
                 //navigate back to other fragment
                 NavController navController = Navigation.findNavController(view);
@@ -108,7 +145,7 @@ public class PickedImageFragment extends Fragment {
         byte[] byteArray1;
         byteArray1 = Base64.decode(string, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(byteArray1, 0,
-                byteArray1.length);/* w  w  w.ja va 2 s  .  c om*/
+                byteArray1.length);
     }
 
     private static String convertBitmapToString(Bitmap bitmap) {

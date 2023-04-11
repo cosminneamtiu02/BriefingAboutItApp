@@ -8,11 +8,11 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class Image{
-    private final String id;
-    private final String photo;
-    private final String imageName;
-    private final String imageBlurred;
-    private final boolean toBlur;
+    private String id;
+    private String photo;
+    private String imageName;
+    private String imageBlurred;
+    private boolean toBlur;
     private ArrayList<Face> faces;
 
     public Image(String id, String imageName, String photo, String imageBlurred, boolean toBlur, ArrayList<Face> faces) {
@@ -22,6 +22,10 @@ public class Image{
         this.imageBlurred = imageBlurred;
         this.toBlur = toBlur;
         this.faces = faces;
+    }
+
+    public Image(){
+
     }
 
     public ArrayList<Face> getFaces() {

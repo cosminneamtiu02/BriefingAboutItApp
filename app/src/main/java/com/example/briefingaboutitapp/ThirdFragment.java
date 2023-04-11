@@ -1,14 +1,17 @@
 package com.example.briefingaboutitapp;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,12 +26,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.briefingaboutitapp.databinding.FragmentThirdBinding;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 import Entities.Article;
 import Entities.Image;
@@ -42,6 +47,16 @@ public class ThirdFragment extends Fragment {
 
     private ActivityResultLauncher<String> galleryLauncher;
 
+    private ListenerRegistration listener;
+
+    private Article article;
+
+    private ArrayList<Image> images;
+
+    private String id;
+
+    RecyclerView recyclerView;
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -52,6 +67,66 @@ public class ThirdFragment extends Fragment {
 
         binding = FragmentThirdBinding.inflate(inflater, container, false);
 
+
+        ProgressBar progressBar = new ProgressBar(binding.getRoot().getContext(), null, android.R.attr.progressBarStyleLarge);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.VISIBLE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(binding.getRoot().getContext());
+        builder.setView(progressBar);
+        AlertDialog progressDialog = builder.create();
+        progressDialog.show();
+
+        //gets temp article
+        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+        Article tempArticle = articleUtils.getArticleFromShPref();
+
+        //get article id
+        String articleID = articleUtils.getArticleUUIDFromShPref();
+        this.id = articleID;
+
+        // retrieve object from Firestore
+        FirestoreUtils articleDBObject = new FirestoreUtils(tempArticle);
+        DocumentReference docRef = articleDBObject.getPath().document(articleID);
+
+        listener = docRef.addSnapshotListener((snapshot, e) -> {
+
+            if (snapshot != null && snapshot.exists() && e == null) {
+
+                article = snapshot.toObject(Article.class);
+                if (article != null) {
+
+                    this.images = article.getImages();
+                    if (binding != null) {
+                        recyclerView = binding.getRoot().findViewById(R.id.recyclerview);
+                        recyclerView.setHasFixedSize(true);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext()));
+                        ImagesAdapter imagesAdapter = new ImagesAdapter(images);
+                        recyclerView.setAdapter(imagesAdapter);
+
+                        imagesAdapter.setOnClickListener(position -> {
+
+                            //package object uri
+                            Image tempImage = article.getImages().get(position);
+                            Gson gson = new Gson();
+                            String imageAsJSON = gson.toJson(tempImage);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("ImageToEdit", imageAsJSON);
+                            bundle.putString("ArticleId", this.id);
+                            Log.d("articleID", this.id);
+
+                            //navigate to edit image title
+                            NavHostFragment.findNavController(ThirdFragment.this)
+                                    .navigate(R.id.action_ThirdFragment_to_editPhotoFragment, bundle);
+
+                        });
+
+                        progressDialog.dismiss();
+                    }
+                }
+            }
+        });
+
+
         return binding.getRoot();
 
     }
@@ -60,30 +135,6 @@ public class ThirdFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        //gets the images from the article
-        AtomicReference<EntitiesUtils> articleUtils = new AtomicReference<>(new EntitiesUtils(getContext()));
-        Article article = articleUtils.get().getArticleFromShPref();
-        List<Image> images = article.getImages();
-
-        // Add the following lines to create RecyclerView
-        RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recyclerview);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext()));
-        ImagesAdapter imagesAdapter = new ImagesAdapter(images);
-        recyclerView.setAdapter(imagesAdapter);
-
-        imagesAdapter.setOnClickListener(position -> {
-
-            //package object uri
-            Bundle bundle = new Bundle();
-            bundle.putString("ImageObjectPosition", String.valueOf(position));
-
-            //navigate to edit image title
-            NavHostFragment.findNavController(ThirdFragment.this)
-                    .navigate(R.id.action_ThirdFragment_to_editPhotoFragment, bundle);
-
-        });
-
 
         binding.returnToEditText.setOnClickListener(view1 -> NavHostFragment.findNavController(ThirdFragment.this)
                 .navigate(R.id.action_ThirdFragment_to_SecondFragment));
@@ -91,6 +142,7 @@ public class ThirdFragment extends Fragment {
         Button photoPickerButton = view.findViewById(R.id.photo_picker_button);
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 result -> {
+                    listener.remove();
                     if(result!= null){
                         Bitmap photoBitmap;
                         String photoBitmapAsString = "";
@@ -121,18 +173,21 @@ public class ThirdFragment extends Fragment {
                     }
                 });
 
-        photoPickerButton.setOnClickListener(view12 -> galleryLauncher.launch("image/*"));
+        photoPickerButton.setOnClickListener(view12 -> {
+            if(this.images.size() < 2){
+                galleryLauncher.launch("image/*");
+            }
+            else{
+                Toast.makeText(binding.getRoot().getContext(), "Photos limit reached!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         binding.submitForm.setOnClickListener(view1 -> {
 
-            Article myArticle = articleUtils.get().getArticleFromShPref();
 
-            FirestoreUtils fsUtils = new FirestoreUtils(myArticle);
+            listener.remove();
 
-            fsUtils.commitArticle(this.getContext());
-
-            //remove created article from shared preferences
-            articleUtils.get().dropArticleFromShPref();
+            Toast.makeText(binding.getRoot().getContext(), "Article submitted successfully", Toast.LENGTH_SHORT).show();
 
             Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
             this.startActivity(goToMainActivity);

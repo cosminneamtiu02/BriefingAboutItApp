@@ -4,47 +4,47 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentEditPhotoBinding;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import Entities.Article;
 import Entities.Image;
 import Utils.DesignUtils;
 import Utils.EntitiesUtils;
+import Utils.FirebaseDataBindings;
 
 
 public class EditPhotoFragment extends Fragment {
 
     private FragmentEditPhotoBinding binding;
 
-    private ActivityResultLauncher<String> galleryLauncher;
-
     private Image myImage;
 
     private Bitmap localImageBitmap;
 
-    private ImageView imageView;
+    private Image toDelete;
+
+    private String articleId;
 
     @Override
     public View onCreateView(
@@ -63,15 +63,13 @@ public class EditPhotoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        int imagePosition = Integer.parseInt(requireArguments().getString("ImageObjectPosition"));
-
-        //gets the images from the article
-        EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-        Article article = articleUtils.getArticleFromShPref();
-        List<Image> images = article.getImages();
+        Gson gson = new Gson();
 
         //getting image
-        this.myImage = images.get(imagePosition);
+        this.myImage = gson.fromJson(requireArguments().getString("ImageToEdit"), Image.class);
+        this.toDelete = this.myImage;
+        this.articleId = requireArguments().getString("ArticleId");
+        Log.d("docID", this.articleId);
 
         //set editable text
         EditText title = (EditText) binding.getRoot().getViewById(R.id.photo_description_to_edit);
@@ -93,34 +91,10 @@ public class EditPhotoFragment extends Fragment {
         //set image
         Bitmap imageBitmap = convertStringToBitmap(myImage.getPhoto());
         this.localImageBitmap = imageBitmap;
-        imageView = binding.getRoot().findViewById(R.id.image_view_edit);
+        ImageView imageView = binding.getRoot().findViewById(R.id.image_view_edit);
         imageView.setImageBitmap(imageBitmap);
 
 
-        //pick another image
-        Button pickAnotherPhotoButton = binding.getRoot().findViewById(R.id.pick_other_image);
-        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
-                result -> {
-                    if(result!= null){
-                        Bitmap photoBitmap = null;
-
-                        //convert uri to bitmap
-                        try {
-                            photoBitmap = BitmapFactory.decodeStream(binding.getRoot().getContext()
-                                    .getContentResolver().openInputStream(result));
-
-
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-
-                        this.localImageBitmap = photoBitmap;
-                        imageView.setImageBitmap(this.localImageBitmap);
-
-                    }
-
-                });
-        pickAnotherPhotoButton.setOnClickListener(view12 -> galleryLauncher.launch("image/*"));
 
         //submit image class button
         binding.submitMyEditedPhotoButton.setOnClickListener(aView1 -> {
@@ -132,8 +106,22 @@ public class EditPhotoFragment extends Fragment {
                 String imageName = binding.photoDescriptionToEdit.getText().toString().trim();
                 boolean to_blur = binding.checkForBlurringEdit.isChecked();
                 Image newImage = new Image(myImage.getId(), imageName, convertBitmapToString(localImageBitmap), "", to_blur, new ArrayList<>());
-                article.updateImage(newImage);
-                articleUtils.updateArticleShPref(article);
+
+                //gets temp article
+                EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+                Article tempArticle = articleUtils.getArticleFromShPref();
+
+                FirebaseDataBindings dbBinding = new FirebaseDataBindings();
+                DocumentReference documentRef = dbBinding.getDatabaseReference().
+                        collection("Users" ).
+                        document(tempArticle.getCreator()).
+                        collection("Articles").
+                        document(articleId);
+
+                // Update the object at the specified index in the array field
+                documentRef.update("images", FieldValue.arrayRemove(this.toDelete));
+                documentRef.update("images", FieldValue.arrayUnion(newImage));
+
 
                 //announce the edit
                 Toast.makeText(binding.getRoot().getContext(), "Photo edited!", Toast.LENGTH_SHORT).show();
@@ -147,9 +135,21 @@ public class EditPhotoFragment extends Fragment {
         //delete photo button
         binding.deletePhoto.setOnClickListener(aView2 -> {
 
-            //delete the current image
-            article.deleteImage(myImage);
-            articleUtils.updateArticleShPref(article);
+            //gets temp article
+            EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+            Article tempArticle = articleUtils.getArticleFromShPref();
+            Log.d("docID", this.articleId);
+            FirebaseDataBindings dbBinding = new FirebaseDataBindings();
+            DocumentReference documentRef = dbBinding.getDatabaseReference().
+                    collection("Users" ).
+                    document(tempArticle.getCreator()).
+                    collection("Articles").
+                    document(this.articleId);
+
+
+
+            // Update the object at the specified index in the array field
+            documentRef.update("images", FieldValue.arrayRemove(this.toDelete));
 
             //announce the delete
             Toast.makeText(binding.getRoot().getContext(), "Photo deleted!", Toast.LENGTH_SHORT).show();
