@@ -106,8 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
             //create the new article
             Article newArticle = new Article(sh.getString("email", ""));
-            FirestoreUtils articleDBObject = new FirestoreUtils(newArticle);
-            articleDBObject.commitArticle(getApplicationContext());
 
             //store temp article with id
             EntitiesUtils setArticleUUID = new EntitiesUtils(getApplicationContext());

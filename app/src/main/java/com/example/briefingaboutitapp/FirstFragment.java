@@ -101,6 +101,9 @@ public class FirstFragment extends Fragment {
                     }
                 }
             }
+            else{
+                progressDialog.dismiss();
+            }
         });
 
         return binding.getRoot();
@@ -120,6 +123,12 @@ public class FirstFragment extends Fragment {
 
                 Title title = new Title(this.titleHeading, this.titleText);
 
+                if(this.article == null) {
+                    EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+                    String author = articleUtils.getEmailFromShPref();
+                    String id = articleUtils.getArticleUUIDFromShPref();
+                    this.article = new Article(id, author);
+                }
                 article.setTitle(title);
 
                 FirestoreUtils articleDBObject = new FirestoreUtils(article);
