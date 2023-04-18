@@ -85,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
                     //set uuid in sh pref
                     EntitiesUtils setArticleUUID = new EntitiesUtils(getApplicationContext());
                     setArticleUUID.setArticleUUIDToShPref(pairs.get(position).first);
+
+                    Intent goToArticleEdit = new Intent(this, ArticleEditMenuActivity.class);
+                    startActivity(goToArticleEdit);
                 });
 
             } else {
