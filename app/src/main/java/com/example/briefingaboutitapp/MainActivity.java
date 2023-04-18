@@ -19,6 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,6 +74,10 @@ public class MainActivity extends AppCompatActivity {
                     pairs.add(new Pair<>(document.getId(), Objects.requireNonNull(title).getTitleText()));
 
                 }
+
+                pairs.sort(Comparator.comparing((Pair<String, String> p) -> p.second));
+
+
                 //populate the RW with articles
                 recyclerView = findViewById(R.id.recyclerview);
                 recyclerView.setHasFixedSize(true);
@@ -87,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                     setArticleUUID.setArticleUUIDToShPref(pairs.get(position).first);
 
                     Intent goToArticleEdit = new Intent(this, ArticleEditMenuActivity.class);
+                    goToArticleEdit.putExtra("articleTitle",pairs.get(position).second);
                     startActivity(goToArticleEdit);
                 });
 
@@ -106,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
             //store temp article with id
             EntitiesUtils setArticleUUID = new EntitiesUtils(getApplicationContext());
             setArticleUUID.setArticleUUIDToShPref(newArticle.getArticleId());
-            Log.d("ArticleCreateID", newArticle.getArticleId());
 
             //navigate to the article creation intent
             Intent goToArticleCreation = new Intent(this, CreateArticle.class);

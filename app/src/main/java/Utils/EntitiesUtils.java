@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
-import java.util.UUID;
-
 import Entities.Article;
 
 public class EntitiesUtils {
