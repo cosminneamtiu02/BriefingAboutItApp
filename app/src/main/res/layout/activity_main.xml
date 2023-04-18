@@ -33,11 +33,41 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:text="@string/log_out"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/purple_500"
             android:textSize="16sp"
             tools:layout_editor_absoluteX="301dp"
             tools:layout_editor_absoluteY="8dp" />
 
     </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/current_articles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:text="@string/current_articles"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.109" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="414dp"
+        android:layout_height="611dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_toolbar"
+        app:layout_constraintVertical_bias="1.0" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/createArticle"

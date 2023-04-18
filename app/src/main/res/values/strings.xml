@@ -57,5 +57,5 @@
     <string name="paragraph_description_label">Write a short description of the paragraph:</string>
     <string name="paragraph_text_label">Paragraph:</string>
     <string name="discard_paragraph">Discard</string>
-
+    <string name="current_articles">Current Articles:</string>
 </resources>
