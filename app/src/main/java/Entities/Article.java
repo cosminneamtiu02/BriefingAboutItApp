@@ -18,6 +18,14 @@ public class Article {
         this.paragraphs = new ArrayList<>();
     }
 
+    public Article(String articleID, String creator) {
+        this.articleId = articleID;
+        this.creator = creator;
+        this.title = new Title("","");
+        this.images = new ArrayList<>();
+        this.paragraphs = new ArrayList<>();
+    }
+
     public Article() {
     }
 

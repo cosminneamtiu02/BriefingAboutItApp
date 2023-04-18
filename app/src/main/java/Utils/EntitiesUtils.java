@@ -46,6 +46,11 @@ public class EntitiesUtils {
         return sh.getString("ArticleUUID", "");
     }
 
+    public String getEmailFromShPref(){
+        SharedPreferences sh = this.context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        return sh.getString("email", "");
+    }
+
     public void dropArticleFromShPref(){
         SharedPreferences sh = this.context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
         SharedPreferences.Editor editor = sh.edit();

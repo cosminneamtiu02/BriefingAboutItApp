@@ -23,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentFirstBinding;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Objects;
@@ -31,6 +32,7 @@ import Entities.Article;
 import Entities.Title;
 import Utils.DesignUtils;
 import Utils.EntitiesUtils;
+import Utils.FirebaseDataBindings;
 import Utils.FirestoreUtils;
 
 
@@ -61,14 +63,15 @@ public class FirstFragment extends Fragment {
 
         //gets temp article
         EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-        Article tempArticle = articleUtils.getArticleFromShPref();
+        String author = articleUtils.getEmailFromShPref();
 
         //get article id
         String articleID = articleUtils.getArticleUUIDFromShPref();
 
         // retrieve object from Firestore
-        FirestoreUtils articleDBObject = new FirestoreUtils(tempArticle);
-        DocumentReference docRef = articleDBObject.getPath().document(articleID);
+        FirebaseDataBindings dbBinding = new FirebaseDataBindings();
+        FirebaseFirestore db = dbBinding.getDatabaseReference();
+        DocumentReference docRef = db.collection("Users").document(author).collection("Articles").document(articleID);
 
         listener = docRef.addSnapshotListener((snapshot, e) -> {
 

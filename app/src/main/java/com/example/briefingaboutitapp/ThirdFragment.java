@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.briefingaboutitapp.databinding.FragmentThirdBinding;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.gson.Gson;
 
@@ -38,6 +39,7 @@ import java.util.Objects;
 import Entities.Article;
 import Entities.Image;
 import Utils.EntitiesUtils;
+import Utils.FirebaseDataBindings;
 import Utils.FirestoreUtils;
 import Utils.ImagesAdapter.ImagesAdapter;
 
@@ -78,15 +80,15 @@ public class ThirdFragment extends Fragment {
 
         //gets temp article
         EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-        Article tempArticle = articleUtils.getArticleFromShPref();
+        String author = articleUtils.getEmailFromShPref();
 
         //get article id
         String articleID = articleUtils.getArticleUUIDFromShPref();
         this.id = articleID;
-
         // retrieve object from Firestore
-        FirestoreUtils articleDBObject = new FirestoreUtils(tempArticle);
-        DocumentReference docRef = articleDBObject.getPath().document(articleID);
+        FirebaseDataBindings dbBinding = new FirebaseDataBindings();
+        FirebaseFirestore db = dbBinding.getDatabaseReference();
+        DocumentReference docRef = db.collection("Users").document(author).collection("Articles").document(articleID);
 
         listener = docRef.addSnapshotListener((snapshot, e) -> {
 
