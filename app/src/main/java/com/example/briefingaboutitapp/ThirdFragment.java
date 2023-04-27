@@ -37,10 +37,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import Entities.Article;
+import Entities.EndpointRequest;
 import Entities.Image;
 import Utils.EntitiesUtils;
 import Utils.FirebaseDataBindings;
-import Utils.FirestoreUtils;
 import Utils.ImagesAdapter.ImagesAdapter;
 
 public class ThirdFragment extends Fragment {
@@ -188,6 +188,10 @@ public class ThirdFragment extends Fragment {
 
 
             listener.remove();
+
+            EndpointRequest endpointRequest = new EndpointRequest();
+
+            Log.d("EndpointPrefix", endpointRequest.invokeOnJson(""));
 
             Toast.makeText(binding.getRoot().getContext(), "Article submitted successfully", Toast.LENGTH_SHORT).show();
 
