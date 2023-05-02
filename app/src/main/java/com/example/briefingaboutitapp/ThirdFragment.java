@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import Entities.Article;
-import Entities.EndpointRequest;
 import Entities.Image;
 import Utils.EntitiesUtils;
 import Utils.FirebaseDataBindings;
 import Utils.ImagesAdapter.ImagesAdapter;
+import Utils.LambdaClient;
 
 public class ThirdFragment extends Fragment {
 
@@ -189,9 +189,11 @@ public class ThirdFragment extends Fragment {
 
             listener.remove();
 
-            EndpointRequest endpointRequest = new EndpointRequest();
+            LambdaClient myLambdaClient = new LambdaClient(binding.getRoot().getContext());
 
-            Log.d("EndpointPrefix", endpointRequest.invokeOnJson(""));
+            Thread thread = new Thread(() -> Log.d("LambdaResponse", myLambdaClient.invokeLambda("Test")));
+            thread.start();
+
 
             Toast.makeText(binding.getRoot().getContext(), "Article submitted successfully", Toast.LENGTH_SHORT).show();
 
