@@ -42,8 +42,15 @@ import Utils.EntitiesUtils;
 import Utils.FirebaseDataBindings;
 import Utils.ImagesAdapter.ImagesAdapter;
 import Utils.LambdaClient;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class ThirdFragment extends Fragment {
+
+public class ThirdFragment extends Fragment{
+
+    private Disposable disposable;
 
     private FragmentThirdBinding binding;
 
@@ -189,13 +196,26 @@ public class ThirdFragment extends Fragment {
 
             listener.remove();
 
-            LambdaClient myLambdaClient = new LambdaClient(binding.getRoot().getContext());
 
-            Thread thread = new Thread(() -> Log.d("LambdaResponse", myLambdaClient.invokeLambda("Test")));
-            thread.start();
+            // In your method:
+            disposable = Observable.fromCallable(() -> {
+                        LambdaClient myLambdaClient = new LambdaClient(binding.getRoot().getContext());
+
+                        return myLambdaClient.invokeLambda("{" +
+                                "\"user\": \"John Doe\"," +
+                                "\"article_id\": \"John Doe\"}");
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(response -> {
+                        // Handle response from Lambda function here
+                        Toast.makeText(binding.getRoot().getContext(), "Article submitted successfully", Toast.LENGTH_SHORT).show();
+                    }, throwable -> {
+                        // Handle errors here
+                        Toast.makeText(binding.getRoot().getContext(), "Error submitting article", Toast.LENGTH_SHORT).show();
+                    });
 
 
-            Toast.makeText(binding.getRoot().getContext(), "Article submitted successfully", Toast.LENGTH_SHORT).show();
 
             Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
             this.startActivity(goToMainActivity);

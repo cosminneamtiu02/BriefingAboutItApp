@@ -5,6 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import android.content.Context;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClient;
@@ -25,6 +26,7 @@ public class LambdaClient {
                 Regions.EU_WEST_3 // Region
         );
         lambdaClient = new AWSLambdaClient(credentialsProvider);
+        lambdaClient.setRegion(Region.getRegion(Regions.EU_WEST_3));
     }
 
     public String invokeLambda(String jsonString) {
@@ -37,6 +39,7 @@ public class LambdaClient {
         InvokeRequest invokeRequest = new InvokeRequest()
                 .withFunctionName(LAMBDA_FUNCTION_NAME)
                 .withPayload(jsonBuffer);
+
         InvokeResult invokeResult = lambdaClient.invoke(invokeRequest);
         ByteBuffer inputStream = invokeResult.getPayload();
         return UTF_8.decode(inputStream).toString();
