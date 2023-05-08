@@ -15,7 +15,7 @@ import com.amazonaws.services.lambda.model.InvokeResult;
 import java.nio.ByteBuffer;
 
 public class LambdaClient {
-    private static final String LAMBDA_FUNCTION_NAME = "EndpointCoordinator";
+    private static final String LAMBDA_FUNCTION_NAME = "QueuePopulator";
 
     private final AWSLambda lambdaClient;
 

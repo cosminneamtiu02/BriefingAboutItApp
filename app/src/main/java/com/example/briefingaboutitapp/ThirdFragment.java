@@ -64,6 +64,8 @@ public class ThirdFragment extends Fragment{
 
     private String id;
 
+    private String author;
+
     RecyclerView recyclerView;
 
     @Override
@@ -87,7 +89,7 @@ public class ThirdFragment extends Fragment{
 
         //gets temp article
         EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-        String author = articleUtils.getEmailFromShPref();
+        author = articleUtils.getEmailFromShPref();
 
         //get article id
         String articleID = articleUtils.getArticleUUIDFromShPref();
@@ -196,25 +198,24 @@ public class ThirdFragment extends Fragment{
 
             listener.remove();
 
+            if(images.size() != 0) {
+                disposable = Observable.fromCallable(() -> {
+                            LambdaClient myLambdaClient = new LambdaClient(binding.getRoot().getContext());
 
-            // In your method:
-            disposable = Observable.fromCallable(() -> {
-                        LambdaClient myLambdaClient = new LambdaClient(binding.getRoot().getContext());
-
-                        return myLambdaClient.invokeLambda("{" +
-                                "\"user\": \"John Doe\"," +
-                                "\"article_id\": \"John Doe\"}");
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(response -> {
-                        // Handle response from Lambda function here
-                        Toast.makeText(binding.getRoot().getContext(), "Article submitted successfully", Toast.LENGTH_SHORT).show();
-                    }, throwable -> {
-                        // Handle errors here
-                        Toast.makeText(binding.getRoot().getContext(), "Error submitting article", Toast.LENGTH_SHORT).show();
-                    });
-
+                            return myLambdaClient.invokeLambda("{" +
+                                    "\"user\": \" " + author + "\"," +
+                                    "\"article_id\": \"" + id + "\"}");
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(response -> {
+                            // Handle response from Lambda function here
+                            Toast.makeText(binding.getRoot().getContext(), "Article submitted successfully", Toast.LENGTH_SHORT).show();
+                        }, throwable -> {
+                            // Handle errors here
+                            Toast.makeText(binding.getRoot().getContext(), "Error submitting article", Toast.LENGTH_SHORT).show();
+                        });
+            }
 
 
             Intent goToMainActivity = new Intent(getContext(), MainActivity.class);
