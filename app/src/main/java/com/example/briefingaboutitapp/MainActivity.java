@@ -1,6 +1,7 @@
 package com.example.briefingaboutitapp;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         Button logOutButton = findViewById(R.id.log_out);
         logOutButton.setOnClickListener(view -> {
             AuthUtils database = new AuthUtils();
+            SharedPreferences settings = getSharedPreferences("PreferencesName", Context.MODE_PRIVATE);
+            settings.edit().remove("email").apply();
             database.logout(this);
         });
 

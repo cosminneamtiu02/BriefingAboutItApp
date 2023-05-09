@@ -1,5 +1,8 @@
 package com.example.briefingaboutitapp;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -27,10 +30,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import Entities.Article;
 import Entities.Image;
 import Utils.DesignUtils;
-import Utils.EntitiesUtils;
 import Utils.FirebaseDataBindings;
 
 
@@ -107,14 +108,13 @@ public class EditPhotoFragment extends Fragment {
                 boolean to_blur = binding.checkForBlurringEdit.isChecked();
                 Image newImage = new Image(myImage.getId(), imageName, convertBitmapToString(localImageBitmap), "", to_blur, new ArrayList<>());
 
-                //gets temp article
-                EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-                Article tempArticle = articleUtils.getArticleFromShPref();
+                SharedPreferences shPref = binding.getRoot().getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                String emailFromLogin = shPref.getString("email", "");
 
                 FirebaseDataBindings dbBinding = new FirebaseDataBindings();
                 DocumentReference documentRef = dbBinding.getDatabaseReference().
                         collection("Users" ).
-                        document(tempArticle.getCreator()).
+                        document(emailFromLogin).
                         collection("Articles").
                         document(articleId);
 
@@ -135,14 +135,13 @@ public class EditPhotoFragment extends Fragment {
         //delete photo button
         binding.deletePhoto.setOnClickListener(aView2 -> {
 
-            //gets temp article
-            EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-            Article tempArticle = articleUtils.getArticleFromShPref();
-            Log.d("docID", this.articleId);
+            SharedPreferences shPref = binding.getRoot().getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+            String emailFromLogin = shPref.getString("email", "");
+
             FirebaseDataBindings dbBinding = new FirebaseDataBindings();
             DocumentReference documentRef = dbBinding.getDatabaseReference().
                     collection("Users" ).
-                    document(tempArticle.getCreator()).
+                    document(emailFromLogin).
                     collection("Articles").
                     document(this.articleId);
 

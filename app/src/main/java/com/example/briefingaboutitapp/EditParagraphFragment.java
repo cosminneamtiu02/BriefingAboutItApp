@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +18,15 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.briefingaboutitapp.databinding.FragmentEditParagraphBinding;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-import Entities.Article;
 import Entities.Paragraph;
 import Entities.Title;
 import Utils.DesignUtils;
-import Utils.EntitiesUtils;
 import Utils.FirebaseDataBindings;
 
 
@@ -94,14 +89,13 @@ public class EditParagraphFragment extends Fragment {
                     this.paragraph.setParagraphText(paragraphText);
                 }
 
-
-                EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-                Article tempArticle = articleUtils.getArticleFromShPref();
+                SharedPreferences shPref = binding.getRoot().getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                String emailFromLogin = shPref.getString("email", "");
 
                 FirebaseDataBindings dbBinding = new FirebaseDataBindings();
                 DocumentReference documentRef = dbBinding.getDatabaseReference().
                         collection("Users" ).
-                        document(tempArticle.getCreator()).
+                        document(emailFromLogin).
                         collection("Articles").
                         document(articleId);
 
@@ -127,13 +121,14 @@ public class EditParagraphFragment extends Fragment {
         binding.discardParagraph.setOnClickListener(
                 delete -> {
                     //update paragraphs
-                    EntitiesUtils articleUtils = new EntitiesUtils(getContext());
-                    Article tempArticle = articleUtils.getArticleFromShPref();
+                    SharedPreferences shPref = binding.getRoot().getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                    String emailFromLogin = shPref.getString("email", "");
+
 
                     FirebaseDataBindings dbBinding = new FirebaseDataBindings();
                     DocumentReference documentRef = dbBinding.getDatabaseReference().
                             collection("Users" ).
-                            document(tempArticle.getCreator()).
+                            document(emailFromLogin).
                             collection("Articles").
                             document(articleId);
 
