@@ -14,11 +14,12 @@ public class FirestoreUtils {
 
     private final CollectionReference path;
 
-    public FirestoreUtils(Article article) {
+    public FirestoreUtils(Article article, Context context) {
         this.article = article;
         FirebaseDataBindings dbBinding = new FirebaseDataBindings();
         FirebaseFirestore db = dbBinding.getDatabaseReference();
-        this.path = db.collection("Users" ).document(article.getCreator()).collection("Articles");
+        EntitiesUtils entitiesUtils = new EntitiesUtils(context);
+        this.path = db.collection("Users" ).document(entitiesUtils.getEmailFromShPref()).collection("Articles");
     }
 
     public void commitArticle(Context context){

@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         String emailFromLogin = sh.getString("email", "");
 
-        FirestoreUtils myUtils = new FirestoreUtils(new Article(emailFromLogin));
+        FirestoreUtils myUtils = new FirestoreUtils(new Article(emailFromLogin), getApplicationContext());
 
         myUtils.getPath().get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

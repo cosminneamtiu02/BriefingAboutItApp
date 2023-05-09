@@ -119,7 +119,7 @@ public class CreateParagraphFragment extends Fragment {
 
                 //save the paragraph to temporary article object
                 article.addNewParagraph(paragraph);
-                FirestoreUtils articleDBObject = new FirestoreUtils(article);
+                FirestoreUtils articleDBObject = new FirestoreUtils(article, binding.getRoot().getContext());
                 articleDBObject.commitArticle(binding.getRoot().getContext());
                 listener.remove();
 

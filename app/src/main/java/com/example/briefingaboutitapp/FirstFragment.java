@@ -129,9 +129,9 @@ public class FirstFragment extends Fragment {
                     String id = articleUtils.getArticleUUIDFromShPref();
                     this.article = new Article(id, author);
                 }
-                article.setTitle(title);
+                this.article.setTitle(title);
 
-                FirestoreUtils articleDBObject = new FirestoreUtils(article);
+                FirestoreUtils articleDBObject = new FirestoreUtils(this.article, binding.getRoot().getContext());
                 articleDBObject.commitArticle(binding.getRoot().getContext());
 
                 listener.remove();
@@ -204,8 +204,15 @@ public class FirstFragment extends Fragment {
         //drops the current article edit
         binding.returnToMainActivity.setOnClickListener(view1 -> {
 
+
             //remove created article from shared preferences
-            FirestoreUtils articleDBObject = new FirestoreUtils(article);
+            if(this.article == null) {
+                EntitiesUtils articleUtils = new EntitiesUtils(getContext());
+                String author = articleUtils.getEmailFromShPref();
+                String id = articleUtils.getArticleUUIDFromShPref();
+                this.article = new Article(id, author);
+            }
+            FirestoreUtils articleDBObject = new FirestoreUtils(this.article, binding.getRoot().getContext());
             articleDBObject.deleteArticle(binding.getRoot().getContext());
             listener.remove();
 
