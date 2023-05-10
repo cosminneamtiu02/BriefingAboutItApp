@@ -1,11 +1,10 @@
 package com.example.briefingaboutitapp;
 
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -24,7 +23,8 @@ public class ImageViewOnClickActivity extends AppCompatActivity {
 
         Button seeBlurredPicture = findViewById(R.id.see_blurred_picture);
         seeBlurredPicture.setOnClickListener(click -> {
-
+            Intent goToSeeBlurredPhoto = new Intent(this, BlurredPhotoDisplay.class);
+            startActivity(goToSeeBlurredPhoto);
         });
 
 

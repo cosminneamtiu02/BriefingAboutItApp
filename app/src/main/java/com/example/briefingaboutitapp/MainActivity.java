@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.opencv.android.OpenCVLoader;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -66,6 +68,13 @@ public class MainActivity extends AppCompatActivity {
         String emailFromLogin = sh.getString("email", "");
 
         FirestoreUtils myUtils = new FirestoreUtils(new Article(emailFromLogin), getApplicationContext());
+
+        if (OpenCVLoader.initDebug()) {
+            Log.d("OpenCV", "OpenCV library loaded successfully");
+        } else {
+            System.loadLibrary("opencv_java4");
+            Log.d("OpenCV", "Loading OpenCV");
+        }
 
         myUtils.getPath().get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
