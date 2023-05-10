@@ -61,4 +61,6 @@
     <string name="article_edit">Edit Article</string>
     <string name="photo_blur_menu_button">Blur faces in photos</string>
     <string name="information_blur_menu">Pick an image to blur</string>
+    <string name="list_image_display">Displays an image in a list</string>
+
 </resources>
