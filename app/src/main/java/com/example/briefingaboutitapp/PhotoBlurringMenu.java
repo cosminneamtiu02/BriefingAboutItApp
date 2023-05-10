@@ -2,6 +2,7 @@ package com.example.briefingaboutitapp;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -80,7 +81,14 @@ public class PhotoBlurringMenu extends AppCompatActivity {
 
                     imagesAdapter.setOnClickListener(position -> {
 
-                        Log.d("clicked", position + "");
+                        String clickedArticleId = this.images.get(position).getId();
+                        SharedPreferences sh = this.getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                        SharedPreferences.Editor myEdit = sh.edit();
+                        myEdit.putString("ImageID", clickedArticleId);
+                        myEdit.apply();
+
+                        Intent goToSelectBlurOptions = new Intent(this, ImageViewOnClickActivity.class);
+                        startActivity(goToSelectBlurOptions);
 
                     });
 
