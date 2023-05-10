@@ -44,7 +44,7 @@ public class Image{
         return imageBlurred;
     }
 
-    public Bitmap getBlurredPhotoAsBitmap() {
+    public Bitmap blurredPhotoAsBitmap() {
         return convertStringToBitmap(imageBlurred);
     }
 

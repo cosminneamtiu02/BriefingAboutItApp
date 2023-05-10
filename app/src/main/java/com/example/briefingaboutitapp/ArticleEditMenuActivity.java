@@ -4,9 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,10 +33,10 @@ public class ArticleEditMenuActivity extends AppCompatActivity {
             this.startActivity(goToArticleCreation);
         });
 
-        //TODO implementation coming soon
         Button blurFacesInPhotos = findViewById(R.id.article_photo_blur);
         blurFacesInPhotos.setOnClickListener( onClick -> {
-
+            Intent returnToMainActivity = new Intent(this, PhotoBlurringMenu.class);
+            startActivity(returnToMainActivity);
         });
 
         Button doneButton = findViewById(R.id.submit_my_edited_article);

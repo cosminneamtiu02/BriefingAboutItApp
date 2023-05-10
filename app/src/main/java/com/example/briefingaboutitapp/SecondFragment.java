@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,6 @@ import Entities.Article;
 import Entities.Paragraph;
 import Utils.EntitiesUtils;
 import Utils.FirebaseDataBindings;
-import Utils.FirestoreUtils;
 import Utils.ParagraphsAdapter.ParagraphsAdapter;
 
 public class SecondFragment extends Fragment {
