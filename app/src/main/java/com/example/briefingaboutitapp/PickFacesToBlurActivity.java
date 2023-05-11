@@ -131,8 +131,7 @@ public class PickFacesToBlurActivity extends AppCompatActivity {
 
             FirestoreUtils firestoreUtils = new FirestoreUtils(article, getBaseContext());
 
-            firestoreUtils.deleteArticle(getBaseContext(), null);
-            firestoreUtils.commitArticle(getBaseContext(), null);
+            firestoreUtils.commitArticle(getBaseContext(), "Error submitting article!");
 
             Toast.makeText(getBaseContext(),"Image blurred successfully!",Toast.LENGTH_SHORT).show();
 

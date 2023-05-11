@@ -16,12 +16,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
-import java.util.Objects;
-
 import Entities.Article;
 import Entities.Image;
 import Utils.EntitiesUtils;
-import Utils.FaceBlur;
 import Utils.FirebaseDataBindings;
 
 public class BlurredPhotoDisplay extends AppCompatActivity {
@@ -65,11 +62,13 @@ public class BlurredPhotoDisplay extends AppCompatActivity {
                             .filter(image -> lookupID.equals(image.getId()))
                             .findFirst()
                             .orElse(null);
-
-                    Bitmap blurredImage = FaceBlur.blurFaceKMax(Objects.requireNonNull(image).getPhoto(), image.getFaces());
-
-                    ImageView imageView = findViewById(R.id.blurred_image_view);
-                    imageView.setImageBitmap(blurredImage);
+                    if(image != null){
+                        if(image.getImageBlurred() != null){
+                            Bitmap blurredImage = Image.convertStringToBitmap(image.getImageBlurred());
+                            ImageView imageView = findViewById(R.id.blurred_image_view);
+                            imageView.setImageBitmap(blurredImage);
+                        }
+                    }
 
                 }
             }
