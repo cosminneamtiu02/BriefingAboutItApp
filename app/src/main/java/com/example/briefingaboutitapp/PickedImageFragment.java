@@ -121,7 +121,7 @@ public class PickedImageFragment extends Fragment {
                 //save the paragraph to temporary article object
                 article.addNewImage(myImage);
                 FirestoreUtils articleDBObject = new FirestoreUtils(article, binding.getRoot().getContext());
-                articleDBObject.commitArticle(binding.getRoot().getContext());
+                articleDBObject.commitArticle(binding.getRoot().getContext(), "Error submitting article!");
                 listener.remove();
 
                 //navigate back to other fragment

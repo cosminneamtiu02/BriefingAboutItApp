@@ -51,19 +51,19 @@ public class Face {
         return faceCrop;
     }
 
-    public float getXMin() {
+    public int getXMin() {
         return xMin;
     }
 
-    public float getYMin() {
+    public int getYMin() {
         return yMin;
     }
 
-    public float getXMax() {
+    public int getXMax() {
         return xMax;
     }
 
-    public float getYMax() {
+    public int getYMax() {
         return yMax;
     }
 }

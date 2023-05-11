@@ -22,14 +22,14 @@ public class FirestoreUtils {
         this.path = db.collection("Users" ).document(entitiesUtils.getEmailFromShPref()).collection("Articles");
     }
 
-    public void commitArticle(Context context){
+    public void commitArticle(Context context, String message){
         this.path.document(article.getArticleId()).set(article)
-                .addOnFailureListener(e -> Toast.makeText(context,"Error submitting article!",Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(context,message,Toast.LENGTH_SHORT).show());
     }
 
-    public void deleteArticle(Context context){
+    public void deleteArticle(Context context, String message){
         this.path.document(article.getArticleId()).delete()
-                .addOnSuccessListener(aVoid -> Toast.makeText(context,"Article deleted successfully!",Toast.LENGTH_SHORT).show()).addOnFailureListener(e -> Toast.makeText(context,"Error deleting article!",Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(aVoid -> Toast.makeText(context,message,Toast.LENGTH_SHORT).show()).addOnFailureListener(e -> Toast.makeText(context,"Error deleting article!",Toast.LENGTH_SHORT).show());
 
     }
 

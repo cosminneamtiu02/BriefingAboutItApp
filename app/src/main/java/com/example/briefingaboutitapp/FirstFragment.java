@@ -132,7 +132,7 @@ public class FirstFragment extends Fragment {
                 this.article.setTitle(title);
 
                 FirestoreUtils articleDBObject = new FirestoreUtils(this.article, binding.getRoot().getContext());
-                articleDBObject.commitArticle(binding.getRoot().getContext());
+                articleDBObject.commitArticle(binding.getRoot().getContext(), "Error submitting article!");
 
                 listener.remove();
 
@@ -213,7 +213,7 @@ public class FirstFragment extends Fragment {
                 this.article = new Article(id, author);
             }
             FirestoreUtils articleDBObject = new FirestoreUtils(this.article, binding.getRoot().getContext());
-            articleDBObject.deleteArticle(binding.getRoot().getContext());
+            articleDBObject.deleteArticle(binding.getRoot().getContext(), "Article deleted successfully!");
             listener.remove();
 
             //navigate back to main page

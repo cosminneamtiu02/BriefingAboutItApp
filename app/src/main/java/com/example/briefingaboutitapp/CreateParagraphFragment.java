@@ -120,7 +120,7 @@ public class CreateParagraphFragment extends Fragment {
                 //save the paragraph to temporary article object
                 article.addNewParagraph(paragraph);
                 FirestoreUtils articleDBObject = new FirestoreUtils(article, binding.getRoot().getContext());
-                articleDBObject.commitArticle(binding.getRoot().getContext());
+                articleDBObject.commitArticle(binding.getRoot().getContext(), "Error submitting article!");
                 listener.remove();
 
                 //navigation back to article creation main path

@@ -18,7 +18,8 @@ public class ImageViewOnClickActivity extends AppCompatActivity {
 
         Button toBlurClick = findViewById(R.id.select_picture_to_blur);
         toBlurClick.setOnClickListener(click -> {
-
+            Intent goToPickFacesBlur = new Intent(this, PickFacesToBlurActivity.class);
+            startActivity(goToPickFacesBlur);
         });
 
         Button seeBlurredPicture = findViewById(R.id.see_blurred_picture);

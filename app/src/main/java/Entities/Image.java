@@ -48,6 +48,9 @@ public class Image{
         return convertStringToBitmap(imageBlurred);
     }
 
+    public void setImageBlurred(String imageBlurred) {
+        this.imageBlurred = imageBlurred;
+    }
 
     public String getImageName() {
         return imageName;
