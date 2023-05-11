@@ -107,7 +107,7 @@
         android:id="@+id/editParagraphTitleFragment2"
         android:name="com.example.briefingaboutitapp.EditParagraphTitleFragment"
         android:label="Edit Article Paragraph Title"
-        tools:layout="@layout/fragment_edit_paragraph_title2" >
+        tools:layout="@layout/edit_paragraph_title_fragment" >
         <action
             android:id="@+id/action_editParagraphTitleFragment2_to_editParagraphFragment"
             app:destination="@id/editParagraphFragment" />
