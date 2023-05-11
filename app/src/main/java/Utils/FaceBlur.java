@@ -35,10 +35,10 @@ public class FaceBlur {
             Mat cMask = new Mat(h, w, CvType.CV_8UC1, Scalar.all(0));
 
             for (Face face : faces) {
-                int x1 = (int) face.getXMin();
-                int y1 = (int) face.getYMin();
-                int x2 = (int) face.getXMax();
-                int y2 = (int) face.getYMax();
+                int x1 = face.getXMin();
+                int y1 = face.getYMin();
+                int x2 = face.getXMax();
+                int y2 = face.getYMax();
 
                 int meanXY = Math.round(((x2 - x1) + (y2 - y1)) / 2.0f);
                 int kSize = Math.round(meanXY * 0.3f);

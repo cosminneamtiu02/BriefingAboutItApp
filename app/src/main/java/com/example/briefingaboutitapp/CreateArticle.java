@@ -2,12 +2,7 @@ package com.example.briefingaboutitapp;
 
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.view.View;
-
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -18,7 +13,6 @@ import com.example.briefingaboutitapp.databinding.ActivityCreateArticleBinding;
 public class CreateArticle extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
-    private ActivityCreateArticleBinding binding;
     public static boolean active = false;
 
     @Override
@@ -37,7 +31,7 @@ public class CreateArticle extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityCreateArticleBinding.inflate(getLayoutInflater());
+        com.example.briefingaboutitapp.databinding.ActivityCreateArticleBinding binding = ActivityCreateArticleBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);

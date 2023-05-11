@@ -22,9 +22,9 @@ import Entities.Face;
 
 public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
 
-    private List<Face> faceList;
-    private List<Face> checkedFaceList;
-    private Context context;
+    private final List<Face> faceList;
+    private final List<Face> checkedFaceList;
+    private final Context context;
 
     public FaceAdapter(List<Face> faceList, Context context) {
         this.faceList = faceList;

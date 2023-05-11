@@ -1,7 +1,5 @@
 package Entities;
 
-import java.util.UUID;
-
 public class Paragraph {
 
     private String paragraphId;
